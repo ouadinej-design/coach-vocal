@@ -1267,14 +1267,15 @@ let lastKwState = {hit:[], miss:[], keywords:[]};
 function scoreAnswer(transcript, answerText){
   const kwds = getUniqueKeywords(answerText);
   if(kwds.length < 3) return {pct:0, hit:[], miss:[], keywords:kwds};
-  const normTranscript = normalize(transcript);
-  const transcriptWords = normTranscript.split(/\s+/);
+  const normT = normalize(transcript);
+  const tWords = normT.split(/\s+/).filter(w=>w.length>=3);
   const hit=[], miss=[];
   kwds.forEach(kw=>{
-    const found = transcriptWords.some(tw=>
-      tw===kw || tw.startsWith(kw.slice(0,-2)) || kw.startsWith(tw.slice(0,-2))
-    );
-    if(found) hit.push(kw);
+    // Correspondance stricte : le mot-clé est présent tel quel dans le transcript
+    // OU le transcript contient un mot qui commence par les 5 premières lettres du mot-clé (min 5 chars)
+    const exact = tWords.some(tw => tw === kw);
+    const stem  = kw.length >= 5 && tWords.some(tw => tw.length>=4 && tw.startsWith(kw.slice(0,5)));
+    if(exact || stem) hit.push(kw);
     else miss.push(kw);
   });
   const pct = Math.round(hit.length / kwds.length * 100);
@@ -1337,69 +1338,62 @@ function revealAllKeywords(){
   if(!card) return;
 
   const kwds = getUniqueKeywords(card.a);
-  const wrap = document.getElementById('kw-wrap');
-  const pctEl = document.getElementById('kw-pct');
-  const bar = document.getElementById('kw-bar');
-  const words = document.getElementById('kw-words');
-  const suggest = document.getElementById('kw-suggest');
-  const allWrap = document.getElementById('kw-all-wrap');
+  const wrap     = document.getElementById('kw-wrap');
+  const pctEl    = document.getElementById('kw-pct');
+  const barEl    = document.getElementById('kw-bar');
+  const wordsEl  = document.getElementById('kw-words');
+  const suggest  = document.getElementById('kw-suggest');
+  const allWrap  = document.getElementById('kw-all-wrap');
   const allChips = document.getElementById('kw-all-chips');
 
-  // Calculer le score sur le transcript sauvegardé
-  const transcript = lastTranscript ||
-    document.getElementById('transcript').textContent || '';
-
-  if(kwds.length >= 3 && transcript.length > 4){
-    const {pct, hit} = scoreAnswer(transcript, card.a);
-    lastKwState = scoreAnswer(transcript, card.a);
-
-    // Afficher barre de score
-    wrap.classList.add('show');
-    const color = pct>=80?'var(--green)':pct>=40?'var(--orange)':'var(--red)';
-    pctEl.textContent = pct+'%';
-    pctEl.style.color = color;
-    bar.style.width = pct+'%';
-    bar.style.background = color;
-
-    // Suggestion
-    suggest.classList.add('show');
-    if(pct>=80){
-      suggest.style.cssText='background:rgba(50,200,100,.1);border:0.5px solid rgba(50,200,100,.25);color:var(--green)';
-      suggest.textContent='🎯 Excellente réponse ! → Notez Facile 😊';
-    } else if(pct>=40){
-      suggest.style.cssText='background:rgba(232,168,76,.1);border:0.5px solid rgba(232,168,76,.25);color:var(--orange)';
-      suggest.textContent='👌 Bonne base ! → Notez Moyen 🤔';
-    } else {
-      suggest.style.cssText='background:rgba(255,80,80,.08);border:0.5px solid rgba(255,80,80,.2);color:var(--red)';
-      suggest.textContent='💪 À retravailler → Notez Difficile 😅';
-    }
-
-    // Chips — tous en or, verts si trouvés
-    words.innerHTML='';
-    kwds.forEach(w=>{
-      const found = hit.includes(w);
-      const c = document.createElement('div');
-      c.className = 'kw-chip';
-      c.style.cssText = found
-        ? 'background:rgba(50,200,100,.15);border:0.5px solid rgba(50,200,100,.3);color:var(--green)'
-        : 'background:rgba(201,168,76,.1);border:0.5px solid rgba(201,168,76,.25);color:var(--gold2)';
-      c.textContent = (found?'✓ ':'○ ')+w;
-      words.appendChild(c);
-    });
-  }
-
-  // Phrase attendue complète — toujours affichée
+  // ── PHRASE ATTENDUE ── toujours visible
   allWrap.classList.add('show');
+  allWrap.querySelector('.kw-all-title').textContent = '💬 Phrase attendue';
   allChips.innerHTML = '';
-  if(kwds.length >= 3){
-    const allTitle = allWrap.querySelector('.kw-all-title');
-    if(allTitle) allTitle.textContent = '💬 Phrase attendue';
-  }
-  // Afficher la réponse idéale comme phrase dans kw-all
   const phrase = document.createElement('div');
-  phrase.style.cssText='font-size:13px;color:rgba(255,255,255,.85);line-height:1.6;font-style:italic;padding:4px 0';
-  phrase.textContent='" '+card.a+' "';
+  phrase.style.cssText = 'font-size:13px;color:rgba(255,255,255,.85);line-height:1.65;font-style:italic;padding:4px 0';
+  phrase.textContent = '" '+card.a+' "';
   allChips.appendChild(phrase);
+
+  // ── SCORE ── seulement si l'utilisateur a parlé
+  const transcript = lastTranscript;
+  if(!transcript || transcript.trim().length < 5 || kwds.length < 3) return;
+
+  const {pct, hit, miss} = scoreAnswer(transcript, card.a);
+  lastKwState = {pct, hit, miss, keywords:kwds};
+
+  wrap.classList.add('show');
+  const color = pct>=80?'var(--green)':pct>=40?'var(--orange)':'var(--red)';
+  pctEl.textContent = pct+'%';
+  pctEl.style.color = color;
+  barEl.style.width = pct+'%';
+  barEl.style.background = color;
+
+  // Chips mots-clés : ✓ vert si trouvé, ○ or si manqué
+  wordsEl.innerHTML = '';
+  kwds.forEach(w=>{
+    const found = hit.includes(w);
+    const c = document.createElement('div');
+    c.className = 'kw-chip';
+    c.style.cssText = found
+      ? 'background:rgba(50,200,100,.15);border:0.5px solid rgba(50,200,100,.3);color:var(--green)'
+      : 'background:rgba(201,168,76,.1);border:0.5px solid rgba(201,168,76,.25);color:var(--gold2)';
+    c.textContent = (found?'✓ ':'○ ')+w;
+    wordsEl.appendChild(c);
+  });
+
+  // Suggestion
+  suggest.classList.add('show');
+  if(pct>=80){
+    suggest.style.cssText='background:rgba(50,200,100,.1);border:0.5px solid rgba(50,200,100,.25);color:var(--green)';
+    suggest.textContent='🎯 Excellente réponse ! → Notez Facile 😊';
+  } else if(pct>=40){
+    suggest.style.cssText='background:rgba(232,168,76,.1);border:0.5px solid rgba(232,168,76,.25);color:var(--orange)';
+    suggest.textContent='👌 Bonne base ! → Notez Moyen 🤔';
+  } else {
+    suggest.style.cssText='background:rgba(255,80,80,.08);border:0.5px solid rgba(255,80,80,.2);color:var(--red)';
+    suggest.textContent='💪 À retravailler → Notez Difficile 😅';
+  }
 }
 
 /* ═══════════ SPEECH RECOGNITION ═══════════ */
