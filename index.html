@@ -536,7 +536,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);
         <div class="kw-words" id="kw-words"></div>
         <div class="kw-suggest" id="kw-suggest"></div>
         <div class="kw-all-wrap" id="kw-all-wrap">
-          <div class="kw-all-title">📚 Tous les mots-clés à retenir</div>
+          <div class="kw-all-title">💬 Phrase attendue</div>
           <div class="kw-all-chips" id="kw-all-chips"></div>
         </div>
       </div>
@@ -825,6 +825,8 @@ let isRecording=false;
 let recognition=null;
 let isSpeaking=false;
 
+let lastTranscript='';
+
 function getRatings(){return LS.g('ratings')||{}}
 function saveRating(id,level){const r=getRatings();r[id]=level;LS.s('ratings',r)}
 function getSerie(){return LS.g('serie')||0}
@@ -1073,6 +1075,7 @@ function showCard(idx){
   document.getElementById('a-text').textContent=card.a;
 
   // Transcript reset
+  lastTranscript='';
   document.getElementById('transcript').textContent='Votre réponse apparaîtra ici…';
   document.getElementById('transcript').classList.remove('active');
   document.getElementById('kw-wrap').classList.remove('show');
@@ -1328,31 +1331,75 @@ function updateKwScore(transcript){
   }
 }
 
-/* Révèle tous les mots-clés (appelé après reveal ou notation) */
+/* Révèle score + mots-clés + phrase attendue — uniquement à la révélation */
 function revealAllKeywords(){
-  // Affiche les chips manqués
-  document.querySelectorAll('.kw-miss').forEach(c=>c.classList.add('revealed'));
-
-  // Section "tous les mots-clés à retenir"
   const card = currentQueue[currentIndex];
   if(!card) return;
+
   const kwds = getUniqueKeywords(card.a);
-  if(kwds.length < 3) return;
+  const wrap = document.getElementById('kw-wrap');
+  const pctEl = document.getElementById('kw-pct');
+  const bar = document.getElementById('kw-bar');
+  const words = document.getElementById('kw-words');
+  const suggest = document.getElementById('kw-suggest');
   const allWrap = document.getElementById('kw-all-wrap');
   const allChips = document.getElementById('kw-all-chips');
+
+  // Calculer le score sur le transcript sauvegardé
+  const transcript = lastTranscript ||
+    document.getElementById('transcript').textContent || '';
+
+  if(kwds.length >= 3 && transcript.length > 4){
+    const {pct, hit} = scoreAnswer(transcript, card.a);
+    lastKwState = scoreAnswer(transcript, card.a);
+
+    // Afficher barre de score
+    wrap.classList.add('show');
+    const color = pct>=80?'var(--green)':pct>=40?'var(--orange)':'var(--red)';
+    pctEl.textContent = pct+'%';
+    pctEl.style.color = color;
+    bar.style.width = pct+'%';
+    bar.style.background = color;
+
+    // Suggestion
+    suggest.classList.add('show');
+    if(pct>=80){
+      suggest.style.cssText='background:rgba(50,200,100,.1);border:0.5px solid rgba(50,200,100,.25);color:var(--green)';
+      suggest.textContent='🎯 Excellente réponse ! → Notez Facile 😊';
+    } else if(pct>=40){
+      suggest.style.cssText='background:rgba(232,168,76,.1);border:0.5px solid rgba(232,168,76,.25);color:var(--orange)';
+      suggest.textContent='👌 Bonne base ! → Notez Moyen 🤔';
+    } else {
+      suggest.style.cssText='background:rgba(255,80,80,.08);border:0.5px solid rgba(255,80,80,.2);color:var(--red)';
+      suggest.textContent='💪 À retravailler → Notez Difficile 😅';
+    }
+
+    // Chips — tous en or, verts si trouvés
+    words.innerHTML='';
+    kwds.forEach(w=>{
+      const found = hit.includes(w);
+      const c = document.createElement('div');
+      c.className = 'kw-chip';
+      c.style.cssText = found
+        ? 'background:rgba(50,200,100,.15);border:0.5px solid rgba(50,200,100,.3);color:var(--green)'
+        : 'background:rgba(201,168,76,.1);border:0.5px solid rgba(201,168,76,.25);color:var(--gold2)';
+      c.textContent = (found?'✓ ':'○ ')+w;
+      words.appendChild(c);
+    });
+  }
+
+  // Phrase attendue complète — toujours affichée
   allWrap.classList.add('show');
   allChips.innerHTML = '';
-  kwds.forEach(w=>{
-    const hit = lastKwState.hit.includes(w);
-    const c = document.createElement('div');
-    c.className = 'kw-all-chip';
-    c.style.cssText = hit
-      ? 'background:rgba(50,200,100,.15);border-color:rgba(50,200,100,.3);color:var(--green)'
-      : '';
-    c.textContent = (hit?'✓ ':'○ ')+w;
-    allChips.appendChild(c);
-  });
-  document.getElementById('kw-wrap').classList.add('show');
+  if(kwds.length >= 3){
+    const allTitle = allWrap.querySelector('.kw-all-title');
+    if(allTitle) allTitle.textContent = '💬 Phrase attendue';
+  }
+  // Afficher la réponse idéale comme phrase dans kw-all
+  const phrase = document.createElement('div');
+  phrase.style.cssText='font-size:13px;color:rgba(255,255,255,.85);line-height:1.6;font-style:italic;padding:4px 0';
+  phrase.textContent='" '+card.a+' "';
+  allChips.appendChild(phrase);
 }
 
 /* ═══════════ SPEECH RECOGNITION ═══════════ */
@@ -1388,7 +1435,8 @@ function toggleRecording(){
     }
     const text=final||interim||'';
     box.textContent=text||'…';
-    if(text.length>5) updateKwScore(text);
+    // On sauvegarde le transcript mais on n'affiche rien pendant l'enregistrement
+    lastTranscript=text;
   };
   recognition.onerror=(e)=>{
     resetMicBtn();
