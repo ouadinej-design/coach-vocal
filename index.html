@@ -200,6 +200,9 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);
 .q-num{font-size:10px;color:rgba(255,255,255,.3);font-family:monospace}
 .q-pub{font-size:9px;color:var(--muted);padding:3px 8px;border-radius:8px;
   background:rgba(255,255,255,.05);border:0.5px solid rgba(255,255,255,.08)}
+.q-ctx{font-size:11px;color:rgba(255,255,255,.45);margin-bottom:10px;
+  padding:5px 10px;background:rgba(255,255,255,.04);border-radius:8px;
+  border-left:2px solid var(--gold);line-height:1.4}
 .q-text{font-size:16px;font-weight:600;line-height:1.5;font-style:italic;
   color:rgba(255,255,255,.92);margin-bottom:14px}
 .q-text::before{content:'" ';color:var(--gold);font-style:normal;font-size:20px;line-height:0;vertical-align:-4px}
@@ -239,10 +242,19 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);
 .kw-words{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .kw-chip{padding:4px 10px;border-radius:10px;font-size:11px;font-weight:600}
 .kw-hit{background:rgba(50,200,100,.15);border:0.5px solid rgba(50,200,100,.3);color:var(--green)}
-.kw-miss{background:rgba(255,80,80,.08);border:0.5px solid rgba(255,80,80,.15);color:rgba(255,80,80,.6)}
+.kw-miss{background:rgba(255,80,80,.08);border:0.5px solid rgba(255,80,80,.15);color:rgba(255,80,80,.6);display:none}
+.kw-miss.revealed{display:inline-flex}
 .kw-suggest{margin-top:10px;padding:10px 14px;border-radius:12px;
   font-size:12px;font-weight:600;text-align:center;display:none}
 .kw-suggest.show{display:block}
+.kw-all-wrap{margin-top:14px;padding:12px 16px;background:rgba(201,168,76,.06);
+  border:0.5px solid rgba(201,168,76,.2);border-radius:14px;display:none}
+.kw-all-wrap.show{display:block}
+.kw-all-title{font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--gold);font-weight:600;margin-bottom:8px}
+.kw-all-chips{display:flex;flex-wrap:wrap;gap:5px}
+.kw-all-chip{padding:4px 10px;border-radius:10px;font-size:11px;font-weight:600;
+  background:rgba(201,168,76,.1);border:0.5px solid rgba(201,168,76,.25);color:var(--gold2)}
 
 /* REVEAL */
 .reveal-btn{width:100%;margin-top:14px;padding:15px;border-radius:16px;
@@ -499,6 +511,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);
           <div class="q-num" id="q-num">#001</div>
         </div>
       </div>
+      <div class="q-ctx" id="q-ctx"></div>
       <div class="q-text" id="q-text">Chargement…</div>
       <button class="q-listen" onclick="speakQ()">
         <span id="q-speaker">🔊</span> <span>Écouter l'objection</span>
@@ -522,6 +535,10 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);
         <div class="kw-bar-bg"><div class="kw-bar-fill" id="kw-bar" style="width:0%"></div></div>
         <div class="kw-words" id="kw-words"></div>
         <div class="kw-suggest" id="kw-suggest"></div>
+        <div class="kw-all-wrap" id="kw-all-wrap">
+          <div class="kw-all-title">📚 Tous les mots-clés à retenir</div>
+          <div class="kw-all-chips" id="kw-all-chips"></div>
+        </div>
       </div>
     </div>
 
@@ -1045,7 +1062,9 @@ function showCard(idx){
   document.getElementById('q-num').textContent='N°'+String(card.id).padStart(3,'0');
   const pubMap={gen:'🌿 Général',b2c:'👤 B2C',b2b:'🤝 B2B'};
   document.getElementById('q-pub').textContent=pubMap[card.pub]||'';
+  document.getElementById('q-ctx').textContent=getCtx(card.pub, card.cat);
   document.getElementById('q-text').textContent=card.q;
+  lastKwState={hit:[],miss:[],keywords:[]};
 
   // Answer hidden
   document.getElementById('a-card').classList.remove('show');
@@ -1058,9 +1077,11 @@ function showCard(idx){
   document.getElementById('transcript').classList.remove('active');
   document.getElementById('kw-wrap').classList.remove('show');
   document.getElementById('kw-suggest').classList.remove('show');
+  document.getElementById('kw-all-wrap').classList.remove('show');
   document.getElementById('kw-pct').textContent='0%';
   document.getElementById('kw-bar').style.width='0%';
   document.getElementById('kw-words').innerHTML='';
+  document.getElementById('kw-all-chips').innerHTML='';
 
   // Already rated?
   const prev=ratings[card.id];
@@ -1088,6 +1109,7 @@ function revealAnswer(){
   document.getElementById('a-card').classList.add('show');
   document.getElementById('reveal-btn').classList.add('revealed');
   document.getElementById('reveal-btn').textContent='✓ Réponse révélée';
+  revealAllKeywords();
 }
 
 function rateCard(level){
@@ -1110,6 +1132,7 @@ function rateCard(level){
 
   const msgs={easy:'✅ Maîtrisée !',med:'👌 À retravailler',hard:'💪 À pratiquer encore !'};
   toast(msgs[level],'in');
+  revealAllKeywords();
 
   // Auto-envoi rapport quand toute la queue est notée (méthode Tac o tac)
   if(Object.keys(sessionRatings).length===currentQueue.length && !sessionReportSent){
@@ -1167,6 +1190,42 @@ function speakA(){
   speakText(card.a);
 }
 
+/* ═══════════ CONTEXT ENGINE ═══════════ */
+const CTX_WHO = {
+  gen: 'Un prospect / une connaissance',
+  b2c: 'Une cliente particulière',
+  b2b: 'Une future consultante'
+};
+const CTX_SCENE = {
+  'Prix':       'discute du tarif lors d\'une présentation',
+  'Qualité':    'doute de la qualité du produit',
+  'Tenue':      'a testé le parfum et s\'interroge',
+  'Confiance':  'hésite à faire confiance à la marque',
+  'Légalité':   'soulève une question juridique sur les inspirations',
+  'Éthique':    'pose une question sur les valeurs de la marque',
+  'Choix':      'ne sait pas quelle référence choisir',
+  'Comparaison':'compare Chogan à une autre marque',
+  'Alcool':     'réagit à la première impression du parfum',
+  'Échantillon':'veut tester avant de s\'engager',
+  'Cadeau':     'cherche une idée cadeau parfum',
+  'Distribution':'préfère ses habitudes d\'achat classiques',
+  'Intensité':  'est gêné(e) par la puissance du parfum',
+  'Routine':    'est très attaché(e) à son parfum actuel',
+  'Conclusion': 'hésite à conclure la vente',
+  'Luxe':       'associe le prix bas à un manque de prestige',
+  'Flacon':     'est déçu(e) par le packaging',
+  'Business':   'évalue la viabilité économique',
+  'Recrutement':'hésite à rejoindre l\'équipe',
+  'Formation':  'veut comprendre l\'accompagnement prévu',
+  'Logistique': 'pose une question pratique sur la commande',
+  'Légitimité': 'questionne le cadre légal de la vente'
+};
+function getCtx(pub, cat){
+  const who = CTX_WHO[pub] || 'Un contact';
+  const scene = CTX_SCENE[cat] || 'pose une objection';
+  return '💬 '+who+' '+scene+'.';
+}
+
 /* ═══════════ KEYWORD ENGINE ═══════════ */
 const STOP_FR = new Set([
   'le','la','les','un','une','des','de','du','d','l','en','et','ou','à','au','aux',
@@ -1177,7 +1236,8 @@ const STOP_FR = new Set([
   'moins','c','n','s','y','m','j','qu','ça','cela','ceci','ceux','cette','ces',
   'a','ai','as','avez','avons','ont','était','étaient','sera','serait','fait',
   'faire','peut','peuvent','nous','après','avant','entre','vers','chez','sans',
-  'que','quand','comment','pourquoi','combien','votre','notre','leur','leurs'
+  'que','quand','comment','pourquoi','combien','votre','notre','leur','leurs',
+  'donc','alors','ainsi','donc','dont','cest','cela','non','oui','voila','voilà'
 ]);
 
 function normalize(str){
@@ -1193,78 +1253,106 @@ function extractKeywords(text){
     .filter(w=>w.length>=4 && !STOP_FR.has(w));
 }
 
+function getUniqueKeywords(answerText){
+  const kwds = extractKeywords(answerText);
+  const seen = new Set();
+  return kwds.filter(w=>{if(seen.has(w))return false;seen.add(w);return true});
+}
+
+let lastKwState = {hit:[], miss:[], keywords:[]};
+
 function scoreAnswer(transcript, answerText){
-  const kwds=extractKeywords(answerText);
-  if(!kwds.length) return {pct:0,hit:[],miss:[],keywords:[]};
-  const normTranscript=normalize(transcript);
-  const transcriptWords=normTranscript.split(/\s+/);
-  const hit=[];
-  const miss=[];
-  // Deduplicate keywords
-  const seen=new Set();
-  const unique=kwds.filter(w=>{if(seen.has(w))return false;seen.add(w);return true});
-  unique.forEach(kw=>{
-    // Check if keyword appears in transcript (or close variant)
-    const found=transcriptWords.some(tw=>tw===kw||tw.startsWith(kw.slice(0,-1))||kw.startsWith(tw.slice(0,-1)));
+  const kwds = getUniqueKeywords(answerText);
+  if(kwds.length < 3) return {pct:0, hit:[], miss:[], keywords:kwds};
+  const normTranscript = normalize(transcript);
+  const transcriptWords = normTranscript.split(/\s+/);
+  const hit=[], miss=[];
+  kwds.forEach(kw=>{
+    const found = transcriptWords.some(tw=>
+      tw===kw || tw.startsWith(kw.slice(0,-2)) || kw.startsWith(tw.slice(0,-2))
+    );
     if(found) hit.push(kw);
     else miss.push(kw);
   });
-  const pct=Math.round(hit.length/unique.length*100);
-  return {pct,hit,miss,keywords:unique};
+  const pct = Math.round(hit.length / kwds.length * 100);
+  return {pct, hit, miss, keywords:kwds};
 }
 
 function updateKwScore(transcript){
-  const card=currentQueue[currentIndex];
-  if(!card||!transcript||transcript.length<5) return;
-  const {pct,hit,miss}=scoreAnswer(transcript,card.a);
-  const wrap=document.getElementById('kw-wrap');
-  const pctEl=document.getElementById('kw-pct');
-  const bar=document.getElementById('kw-bar');
-  const words=document.getElementById('kw-words');
-  const suggest=document.getElementById('kw-suggest');
+  const card = currentQueue[currentIndex];
+  if(!card || !transcript || transcript.length < 5) return;
+  const result = scoreAnswer(transcript, card.a);
+  lastKwState = result;
+  const {pct, hit, miss} = result;
 
+  const wrap = document.getElementById('kw-wrap');
+  const pctEl = document.getElementById('kw-pct');
+  const bar = document.getElementById('kw-bar');
+  const words = document.getElementById('kw-words');
+  const suggest = document.getElementById('kw-suggest');
+
+  if(result.keywords.length < 3){ wrap.classList.remove('show'); return; }
   wrap.classList.add('show');
 
-  // Color based on score
-  const color=pct>=80?'var(--green)':pct>=40?'var(--orange)':'var(--red)';
-  pctEl.textContent=pct+'%';
-  pctEl.style.color=color;
-  bar.style.width=pct+'%';
-  bar.style.background=color;
+  const color = pct>=80?'var(--green)':pct>=40?'var(--orange)':'var(--red)';
+  pctEl.textContent = pct+'%';
+  pctEl.style.color = color;
+  bar.style.width = pct+'%';
+  bar.style.background = color;
 
-  // Keyword chips
-  words.innerHTML='';
+  // Chips — seuls les VERTS (trouvés) sont visibles, les rouges restent cachés
+  words.innerHTML = '';
   hit.forEach(w=>{
-    const c=document.createElement('div');
-    c.className='kw-chip kw-hit';
-    c.textContent='✓ '+w;
+    const c = document.createElement('div');
+    c.className = 'kw-chip kw-hit';
+    c.textContent = '✓ '+w;
     words.appendChild(c);
   });
   miss.forEach(w=>{
-    const c=document.createElement('div');
-    c.className='kw-chip kw-miss';
-    c.textContent='○ '+w;
+    const c = document.createElement('div');
+    c.className = 'kw-chip kw-miss'; // caché par CSS (display:none)
+    c.textContent = '○ '+w;
     words.appendChild(c);
   });
 
-  // Suggestion auto-notation
   suggest.classList.add('show');
   if(pct>=80){
-    suggest.style.background='rgba(50,200,100,.1)';
-    suggest.style.border='0.5px solid rgba(50,200,100,.25)';
-    suggest.style.color='var(--green)';
+    suggest.style.cssText='background:rgba(50,200,100,.1);border:0.5px solid rgba(50,200,100,.25);color:var(--green)';
     suggest.textContent='🎯 Excellente réponse ! → Notez Facile 😊';
   } else if(pct>=40){
-    suggest.style.background='rgba(232,168,76,.1)';
-    suggest.style.border='0.5px solid rgba(232,168,76,.25)';
-    suggest.style.color='var(--orange)';
-    suggest.textContent='👌 Bonne base, perfectible → Notez Moyen 🤔';
+    suggest.style.cssText='background:rgba(232,168,76,.1);border:0.5px solid rgba(232,168,76,.25);color:var(--orange)';
+    suggest.textContent='👌 Bonne base, continuez ! → Notez Moyen 🤔';
   } else {
-    suggest.style.background='rgba(255,80,80,.08)';
-    suggest.style.border='0.5px solid rgba(255,80,80,.2)';
-    suggest.style.color='var(--red)';
+    suggest.style.cssText='background:rgba(255,80,80,.08);border:0.5px solid rgba(255,80,80,.2);color:var(--red)';
     suggest.textContent='💪 Revoir la réponse → Notez Difficile 😅';
   }
+}
+
+/* Révèle tous les mots-clés (appelé après reveal ou notation) */
+function revealAllKeywords(){
+  // Affiche les chips manqués
+  document.querySelectorAll('.kw-miss').forEach(c=>c.classList.add('revealed'));
+
+  // Section "tous les mots-clés à retenir"
+  const card = currentQueue[currentIndex];
+  if(!card) return;
+  const kwds = getUniqueKeywords(card.a);
+  if(kwds.length < 3) return;
+  const allWrap = document.getElementById('kw-all-wrap');
+  const allChips = document.getElementById('kw-all-chips');
+  allWrap.classList.add('show');
+  allChips.innerHTML = '';
+  kwds.forEach(w=>{
+    const hit = lastKwState.hit.includes(w);
+    const c = document.createElement('div');
+    c.className = 'kw-all-chip';
+    c.style.cssText = hit
+      ? 'background:rgba(50,200,100,.15);border-color:rgba(50,200,100,.3);color:var(--green)'
+      : '';
+    c.textContent = (hit?'✓ ':'○ ')+w;
+    allChips.appendChild(c);
+  });
+  document.getElementById('kw-wrap').classList.add('show');
 }
 
 /* ═══════════ SPEECH RECOGNITION ═══════════ */
