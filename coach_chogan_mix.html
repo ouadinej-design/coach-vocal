@@ -228,6 +228,22 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);
   font-style:italic;transition:all .3s}
 .transcript-box.active{color:var(--text);border-color:rgba(255,255,255,.18)}
 
+/* KEYWORD SCORE */
+.kw-score-wrap{margin-top:10px;display:none}
+.kw-score-wrap.show{display:block}
+.kw-score-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.kw-score-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.kw-score-pct{font-size:20px;font-weight:700}
+.kw-bar-bg{height:6px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden}
+.kw-bar-fill{height:100%;border-radius:4px;transition:width .4s,background .4s}
+.kw-words{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.kw-chip{padding:4px 10px;border-radius:10px;font-size:11px;font-weight:600}
+.kw-hit{background:rgba(50,200,100,.15);border:0.5px solid rgba(50,200,100,.3);color:var(--green)}
+.kw-miss{background:rgba(255,80,80,.08);border:0.5px solid rgba(255,80,80,.15);color:rgba(255,80,80,.6)}
+.kw-suggest{margin-top:10px;padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;text-align:center;display:none}
+.kw-suggest.show{display:block}
+
 /* REVEAL */
 .reveal-btn{width:100%;margin-top:14px;padding:15px;border-radius:16px;
   background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(139,94,26,.1));
@@ -496,6 +512,17 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);
         <span id="mic-txt">🎤 Votre réponse à voix haute — Appuyez pour parler</span>
       </button>
       <div class="transcript-box" id="transcript">Votre réponse apparaîtra ici…</div>
+
+      <!-- KEYWORD SCORE -->
+      <div class="kw-score-wrap" id="kw-wrap">
+        <div class="kw-score-top">
+          <div class="kw-score-label">🎯 Mots-clés détectés</div>
+          <div class="kw-score-pct" id="kw-pct">0%</div>
+        </div>
+        <div class="kw-bar-bg"><div class="kw-bar-fill" id="kw-bar" style="width:0%"></div></div>
+        <div class="kw-words" id="kw-words"></div>
+        <div class="kw-suggest" id="kw-suggest"></div>
+      </div>
     </div>
 
     <!-- REVEAL -->
@@ -1029,6 +1056,11 @@ function showCard(idx){
   // Transcript reset
   document.getElementById('transcript').textContent='Votre réponse apparaîtra ici…';
   document.getElementById('transcript').classList.remove('active');
+  document.getElementById('kw-wrap').classList.remove('show');
+  document.getElementById('kw-suggest').classList.remove('show');
+  document.getElementById('kw-pct').textContent='0%';
+  document.getElementById('kw-bar').style.width='0%';
+  document.getElementById('kw-words').innerHTML='';
 
   // Already rated?
   const prev=ratings[card.id];
@@ -1135,6 +1167,106 @@ function speakA(){
   speakText(card.a);
 }
 
+/* ═══════════ KEYWORD ENGINE ═══════════ */
+const STOP_FR = new Set([
+  'le','la','les','un','une','des','de','du','d','l','en','et','ou','à','au','aux',
+  'ce','se','sa','son','ses','mon','ma','mes','ton','ta','tes','nous','vous','ils',
+  'elles','je','tu','il','elle','on','que','qui','quoi','dont','où','est','sont',
+  'être','avoir','avec','pour','par','sur','sous','dans','si','mais','car','or',
+  'ni','ne','pas','plus','très','bien','aussi','tout','tous','même','comme','plus',
+  'moins','c','n','s','y','m','j','qu','ça','cela','ceci','ceux','cette','ces',
+  'a','ai','as','avez','avons','ont','était','étaient','sera','serait','fait',
+  'faire','peut','peuvent','nous','après','avant','entre','vers','chez','sans',
+  'que','quand','comment','pourquoi','combien','votre','notre','leur','leurs'
+]);
+
+function normalize(str){
+  return str.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/['']/g,' ')
+    .replace(/[^a-z0-9\s]/g,' ');
+}
+
+function extractKeywords(text){
+  return normalize(text)
+    .split(/\s+/)
+    .filter(w=>w.length>=4 && !STOP_FR.has(w));
+}
+
+function scoreAnswer(transcript, answerText){
+  const kwds=extractKeywords(answerText);
+  if(!kwds.length) return {pct:0,hit:[],miss:[],keywords:[]};
+  const normTranscript=normalize(transcript);
+  const transcriptWords=normTranscript.split(/\s+/);
+  const hit=[];
+  const miss=[];
+  // Deduplicate keywords
+  const seen=new Set();
+  const unique=kwds.filter(w=>{if(seen.has(w))return false;seen.add(w);return true});
+  unique.forEach(kw=>{
+    // Check if keyword appears in transcript (or close variant)
+    const found=transcriptWords.some(tw=>tw===kw||tw.startsWith(kw.slice(0,-1))||kw.startsWith(tw.slice(0,-1)));
+    if(found) hit.push(kw);
+    else miss.push(kw);
+  });
+  const pct=Math.round(hit.length/unique.length*100);
+  return {pct,hit,miss,keywords:unique};
+}
+
+function updateKwScore(transcript){
+  const card=currentQueue[currentIndex];
+  if(!card||!transcript||transcript.length<5) return;
+  const {pct,hit,miss}=scoreAnswer(transcript,card.a);
+  const wrap=document.getElementById('kw-wrap');
+  const pctEl=document.getElementById('kw-pct');
+  const bar=document.getElementById('kw-bar');
+  const words=document.getElementById('kw-words');
+  const suggest=document.getElementById('kw-suggest');
+
+  wrap.classList.add('show');
+
+  // Color based on score
+  const color=pct>=80?'var(--green)':pct>=40?'var(--orange)':'var(--red)';
+  pctEl.textContent=pct+'%';
+  pctEl.style.color=color;
+  bar.style.width=pct+'%';
+  bar.style.background=color;
+
+  // Keyword chips
+  words.innerHTML='';
+  hit.forEach(w=>{
+    const c=document.createElement('div');
+    c.className='kw-chip kw-hit';
+    c.textContent='✓ '+w;
+    words.appendChild(c);
+  });
+  miss.forEach(w=>{
+    const c=document.createElement('div');
+    c.className='kw-chip kw-miss';
+    c.textContent='○ '+w;
+    words.appendChild(c);
+  });
+
+  // Suggestion auto-notation
+  suggest.classList.add('show');
+  if(pct>=80){
+    suggest.style.background='rgba(50,200,100,.1)';
+    suggest.style.border='0.5px solid rgba(50,200,100,.25)';
+    suggest.style.color='var(--green)';
+    suggest.textContent='🎯 Excellente réponse ! → Notez Facile 😊';
+  } else if(pct>=40){
+    suggest.style.background='rgba(232,168,76,.1)';
+    suggest.style.border='0.5px solid rgba(232,168,76,.25)';
+    suggest.style.color='var(--orange)';
+    suggest.textContent='👌 Bonne base, perfectible → Notez Moyen 🤔';
+  } else {
+    suggest.style.background='rgba(255,80,80,.08)';
+    suggest.style.border='0.5px solid rgba(255,80,80,.2)';
+    suggest.style.color='var(--red)';
+    suggest.textContent='💪 Revoir la réponse → Notez Difficile 😅';
+  }
+}
+
 /* ═══════════ SPEECH RECOGNITION ═══════════ */
 function resetMicBtn(){
   isRecording=false;
@@ -1166,7 +1298,9 @@ function toggleRecording(){
       if(e.results[i].isFinal) final+=e.results[i][0].transcript;
       else interim+=e.results[i][0].transcript;
     }
-    box.textContent=(final||interim)||'…';
+    const text=final||interim||'';
+    box.textContent=text||'…';
+    if(text.length>5) updateKwScore(text);
   };
   recognition.onerror=(e)=>{
     resetMicBtn();
@@ -1374,5 +1508,4 @@ init();
 </script>
 </body>
 </html>
-
 
