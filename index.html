@@ -8,24 +8,25 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Coach Chogan">
 <meta name="theme-color" content="#0c0c14">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-<title>Coach Objections · Chogan</title>
+<title>Coach Vocal · Chogan</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#0c0c14;--surface:#16161f;--card:#1e1e2a;
+  --bg:#0c0c14;--surface:#16161f;--card:#1e1e2a;--card2:#232330;
   --text:#fff;--muted:rgba(255,255,255,.48);
-  --gold:#c9a84c;--gold2:#e8c870;
+  --gold:#c9a84c;--gold2:#e8c870;--gold3:rgba(201,168,76,.12);
   --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
-  --green:#32c864;--red:#ff5050;--orange:#e8a84c;
+  --green:#32c864;--red:#ff5050;--orange:#e8a84c;--blue:#5b9cff;
 }
 html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);
   font-family:-apple-system,'Helvetica Neue',sans-serif;color:var(--text);
   -webkit-font-smoothing:antialiased}
+
 .screen{position:fixed;inset:0;display:flex;flex-direction:column;
-  transition:opacity .38s,transform .38s cubic-bezier(.4,0,.2,1);overflow:hidden}
+  transition:opacity .35s,transform .35s cubic-bezier(.4,0,.2,1);overflow:hidden}
 .screen.hidden{opacity:0;pointer-events:none;transform:scale(.96)}
+
+/* SHARED */
 .finput{width:100%;background:var(--card);border:0.5px solid rgba(255,255,255,.12);
   border-radius:12px;padding:14px 16px;color:var(--text);font-size:15px;
   font-family:inherit;outline:none;transition:border-color .2s;margin-bottom:14px}
@@ -34,161 +35,323 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);
 .btn-g{width:100%;padding:15px;border-radius:14px;
   background:linear-gradient(135deg,#c9a84c,#8b5e1a);
   border:none;color:#fff;font-size:15px;font-weight:700;cursor:pointer;
-  font-family:inherit;box-shadow:0 4px 20px rgba(201,168,76,.3);
+  font-family:inherit;box-shadow:0 4px 20px rgba(201,168,76,.28);
   transition:opacity .2s,transform .15s;margin-top:4px}
 .btn-g:active{opacity:.85;transform:scale(.98)}
-.btn-g:disabled{opacity:.5;cursor:default}
+.btn-g:disabled{opacity:.4;cursor:default}
 .btn-o{width:100%;padding:14px;border-radius:14px;background:transparent;
-  border:0.5px solid rgba(255,255,255,.2);color:var(--text);font-size:14px;
-  font-weight:500;cursor:pointer;font-family:inherit;margin-top:10px;transition:background .2s}
+  border:0.5px solid rgba(255,255,255,.18);color:var(--text);font-size:14px;
+  font-weight:500;cursor:pointer;font-family:inherit;margin-top:10px;
+  transition:background .2s}
 .btn-o:active{background:rgba(255,255,255,.07)}
 .or-sep{display:flex;align-items:center;gap:12px;margin:18px 0}
 .or-line{flex:1;height:0.5px;background:rgba(255,255,255,.1)}
 .or-txt{font-size:11px;color:rgba(255,255,255,.3)}
-.code-row{display:flex;gap:8px}
+.code-row{display:flex;gap:8px;margin-bottom:0}
 .cinput{flex:1;background:var(--card);border:0.5px solid rgba(255,255,255,.12);
   border-radius:12px;padding:14px 16px;color:var(--text);font-size:19px;
-  font-weight:700;font-family:monospace;letter-spacing:.18em;outline:none;
+  font-weight:700;font-family:monospace;letter-spacing:.16em;outline:none;
   transition:border-color .2s;text-transform:uppercase}
 .cinput:focus{border-color:var(--gold)}
-.cinput::placeholder{font-size:13px;letter-spacing:0;font-weight:400;font-family:-apple-system,sans-serif}
+.cinput::placeholder{font-size:13px;letter-spacing:0;font-weight:400;font-family:inherit}
 .arr{width:52px;height:52px;border-radius:12px;background:var(--gold);
   border:none;color:#000;font-size:22px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .arr:active{opacity:.8}
 .spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.25);
-  border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;margin-right:6px}
+  border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite;
+  vertical-align:middle;margin-right:6px}
 @keyframes sp{to{transform:rotate(360deg)}}
-.form-label{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block}
+.form-label{font-size:11px;font-weight:600;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block}
+.scroll-y{overflow-y:auto;-webkit-overflow-scrolling:touch}
+.scroll-y::-webkit-scrollbar{display:none}
 
-/* LOCK */
+/* ——— LOCK ——— */
 #lock{background:var(--bg);justify-content:flex-end}
-.lock-top{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:calc(60px + var(--st));text-align:center}
-.lock-icon{width:80px;height:80px;border-radius:24px;background:linear-gradient(135deg,#c9a84c,#8b5e1a);display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 12px 40px rgba(201,168,76,.4);margin-bottom:22px}
+.lock-top{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding-top:calc(60px + var(--st));text-align:center}
+.lock-icon{width:84px;height:84px;border-radius:26px;
+  background:linear-gradient(135deg,#c9a84c,#8b5e1a);
+  display:flex;align-items:center;justify-content:center;font-size:40px;
+  box-shadow:0 14px 44px rgba(201,168,76,.4);margin-bottom:22px;
+  animation:breathe 3s ease-in-out infinite}
+@keyframes breathe{0%,100%{box-shadow:0 14px 44px rgba(201,168,76,.4)}
+  50%{box-shadow:0 14px 60px rgba(201,168,76,.65)}}
 .lock-h{font-size:26px;font-weight:700;margin-bottom:8px;letter-spacing:-.02em}
-.lock-s{font-size:14px;color:var(--muted);line-height:1.5;padding:0 36px}
-.lock-ico2{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.06);border:0.5px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:20px;margin-top:24px}
-.sheet{background:var(--surface);border-radius:28px 28px 0 0;padding:26px 22px calc(32px + var(--sb));border-top:0.5px solid rgba(255,255,255,.08)}
+.lock-s{font-size:14px;color:var(--muted);line-height:1.55;padding:0 36px}
+.sheet{background:var(--surface);border-radius:28px 28px 0 0;
+  padding:26px 22px calc(32px + var(--sb));
+  border-top:0.5px solid rgba(255,255,255,.08)}
 .sheet-h{font-size:17px;font-weight:700;margin-bottom:4px}
 .sheet-s{font-size:13px;color:var(--muted);margin-bottom:18px}
 
-/* PENDING */
+/* ——— PENDING ——— */
 #pend{background:var(--bg);justify-content:flex-end}
-.pend-top{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px 0;text-align:center}
-.pulse{width:88px;height:88px;border-radius:50%;background:rgba(201,168,76,.1);border:1.5px solid rgba(201,168,76,.35);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;animation:pu 2s ease-in-out infinite;font-size:36px}
-@keyframes pu{0%,100%{box-shadow:0 0 0 0 rgba(201,168,76,.3)}50%{box-shadow:0 0 0 22px rgba(201,168,76,0)}}
+.pend-top{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:40px 28px 0;text-align:center}
+.pulse{width:88px;height:88px;border-radius:50%;
+  background:rgba(201,168,76,.1);border:1.5px solid rgba(201,168,76,.35);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 24px;animation:pu 2s ease-in-out infinite;font-size:36px}
+@keyframes pu{0%,100%{box-shadow:0 0 0 0 rgba(201,168,76,.3)}
+  50%{box-shadow:0 0 0 22px rgba(201,168,76,0)}}
 .pend-h{font-size:21px;font-weight:700;margin-bottom:10px}
 .pend-s{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:18px}
-.pend-box{background:var(--card);border:0.5px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 18px;font-size:13px;color:var(--muted);line-height:1.7;text-align:left;width:100%;margin-bottom:2px}
+.pend-box{background:var(--card);border:0.5px solid rgba(255,255,255,.08);
+  border-radius:16px;padding:14px 18px;font-size:13px;color:var(--muted);
+  line-height:1.7;text-align:left;width:100%;margin-bottom:2px}
 .pend-box strong{color:var(--text)}
 
-/* MAIN */
-#main{background:var(--bg)}
-.status{height:calc(44px + var(--st));padding-top:var(--st);display:flex;align-items:center;justify-content:space-between;padding-left:20px;padding-right:20px;flex-shrink:0}
-.s-time{font-size:15px;font-weight:700}
-.wh{padding:8px 22px 4px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
-.wh-b{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-.wh-t{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-top:2px}
-.wh-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#c9a84c,#8b5e1a);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;position:relative}
-.av-dot{position:absolute;top:-2px;right:-2px;width:10px;height:10px;border-radius:50%;background:#32c864;border:1.5px solid var(--bg)}
+/* ——— MENU ——— */
+#menu{background:var(--bg)}
+.menu-head{padding:calc(14px + var(--st)) 20px 0;flex-shrink:0}
+.menu-brand{font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:4px}
+.menu-title{font-size:26px;font-weight:700;letter-spacing:-.02em;margin-bottom:2px}
+.menu-av{width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,#c9a84c,#8b5e1a);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;cursor:pointer;position:relative;flex-shrink:0}
+.av-dot{position:absolute;top:-2px;right:-2px;width:10px;height:10px;
+  border-radius:50%;background:var(--green);border:2px solid var(--bg)}
+.menu-row{display:flex;justify-content:space-between;align-items:flex-start}
 
-/* PROGRESS */
-.progress-bar{margin:6px 22px 8px;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;flex-shrink:0}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;transition:width .4s ease}
-.progress-info{display:flex;justify-content:space-between;padding:0 22px;margin-bottom:8px;flex-shrink:0}
-.progress-txt{font-size:11px;color:var(--muted)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+  margin:14px 20px 0;flex-shrink:0}
+.stat-box{background:var(--card);border:0.5px solid rgba(255,255,255,.07);
+  border-radius:14px;padding:12px 8px;text-align:center}
+.stat-num{font-size:22px;font-weight:700}
+.stat-lbl{font-size:9px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);margin-top:2px}
 
-/* CARDS SCROLL */
-.cards-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 14px 90px}
-.cards-scroll::-webkit-scrollbar{display:none}
-
-/* ══ 3-FACE CARD ══ */
-.card-3{
-  position:relative;height:180px;margin-bottom:12px;cursor:pointer;
-  border-radius:20px;overflow:hidden;
-  transition:transform .15s;
-}
-.card-3:active{transform:scale(.98)}
-
-.card-face-3{
-  position:absolute;inset:0;border-radius:20px;
-  display:flex;flex-direction:column;justify-content:center;align-items:center;
-  padding:18px;
-  transition:opacity .35s ease, transform .35s ease;
-  backface-visibility:hidden;
-}
-
-/* FACE 1 — Domaine */
-.face-1{
-  background:linear-gradient(145deg,#1a1a2e,#0e0e1e);
-  border:0.5px solid rgba(201,168,76,.25);
-  opacity:1;transform:translateY(0);z-index:3;
-}
-.face-1::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.7;}
-.face-1::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.3;}
-.f1-type{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:rgba(201,168,76,.5);margin-bottom:10px;text-align:center}
-.f1-cat{font-size:28px;font-weight:800;letter-spacing:-.01em;text-align:center;
-  background:linear-gradient(135deg,var(--gold2),var(--gold));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1;}
-.f1-hint{font-size:10px;color:rgba(255,255,255,.2);margin-top:14px;letter-spacing:.1em;text-transform:uppercase}
-.f1-num{position:absolute;top:12px;right:14px;font-size:10px;font-family:monospace;color:rgba(201,168,76,.3)}
-
-/* FACE 2 — Question */
-.face-2{
-  background:linear-gradient(145deg,#1a1830,#131225);
-  border:0.5px solid rgba(120,100,200,.3);
-  opacity:0;transform:translateY(20px);z-index:2;
-}
-.face-2::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#8b78e8,transparent);opacity:.5;}
-.f2-lbl{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(140,120,220,.7);margin-bottom:10px;text-align:center}
-.f2-q{font-size:15px;font-weight:600;text-align:center;line-height:1.45;color:rgba(255,255,255,.92);font-style:italic}
-.f2-q::before{content:'❝ ';color:#8b78e8;font-style:normal;font-size:16px}
-.f2-q::after{content:' ❞';color:#8b78e8;font-style:normal;font-size:16px}
-.f2-hint{font-size:10px;color:rgba(255,255,255,.18);margin-top:14px;letter-spacing:.1em;text-transform:uppercase}
-
-/* FACE 3 — Réponse */
-.face-3{
-  background:linear-gradient(145deg,#0f2015,#091510);
-  border:0.5px solid rgba(50,200,100,.25);
-  opacity:0;transform:translateY(20px);z-index:1;
-  justify-content:flex-start;align-items:flex-start;
-}
-.face-3::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--green),transparent);opacity:.5;}
-.f3-lbl{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(50,200,100,.7);margin-bottom:8px}
-.f3-a{font-size:12.5px;color:rgba(255,255,255,.88);line-height:1.5;flex:1}
-.f3-kw{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
-.kw-pill{padding:3px 9px;border-radius:20px;background:rgba(50,200,100,.1);
-  border:0.5px solid rgba(50,200,100,.25);font-size:10px;font-weight:600;color:var(--green)}
-
-/* Card states */
-.card-3.state-1 .face-1{opacity:0;transform:translateY(-20px);}
-.card-3.state-1 .face-2{opacity:1;transform:translateY(0);z-index:3;}
-.card-3.state-2 .face-1{opacity:0;transform:translateY(-20px);}
-.card-3.state-2 .face-2{opacity:0;transform:translateY(-20px);z-index:2;}
-.card-3.state-2 .face-3{opacity:1;transform:translateY(0);z-index:3;}
-
-/* BOTTOM NAV */
-.bnav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;padding:8px 0 calc(8px + var(--sb));border-top:0.5px solid rgba(255,255,255,.08);background:rgba(12,12,20,.95);backdrop-filter:blur(12px);}
-.ni{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;font-weight:500;color:var(--muted);padding:4px 20px;cursor:pointer}
-.ni.on{color:#fff}
-.ni svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-
-/* FILTER PILLS */
-.filter-row{display:flex;gap:6px;padding:4px 14px 8px;overflow-x:auto;flex-shrink:0}
+.filter-row{display:flex;gap:7px;padding:14px 20px 0;flex-shrink:0;overflow-x:auto}
 .filter-row::-webkit-scrollbar{display:none}
-.fpill{padding:5px 12px;border-radius:20px;border:0.5px solid rgba(255,255,255,.15);
-  background:transparent;color:var(--muted);font-size:11px;font-weight:500;cursor:pointer;
-  white-space:nowrap;font-family:inherit;transition:all .2s;flex-shrink:0}
-.fpill.active{background:rgba(201,168,76,.15);border-color:var(--gold);color:var(--gold)}
+.f-chip{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600;
+  cursor:pointer;white-space:nowrap;border:0.5px solid rgba(255,255,255,.12);
+  background:transparent;color:var(--muted);transition:all .2s;font-family:inherit}
+.f-chip.on{background:var(--gold3);border-color:rgba(201,168,76,.4);color:var(--gold2)}
 
-/* ADMIN */
-#apov{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.8);backdrop-filter:blur(10px);display:flex;align-items:flex-end;justify-content:center;padding:0;opacity:0;pointer-events:none;transition:opacity .3s}
+.section-lbl{font-size:11px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);padding:16px 20px 10px}
+.modes-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  padding:0 20px;flex-shrink:0}
+.mode-card{background:var(--card);border:0.5px solid rgba(255,255,255,.07);
+  border-radius:18px;padding:18px 16px;cursor:pointer;
+  transition:transform .15s,background .2s;position:relative;overflow:hidden}
+.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
+  opacity:0;transition:opacity .2s}
+.mode-card.gold::before{background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.7}
+.mode-card.green::before{background:linear-gradient(90deg,transparent,var(--green),transparent);opacity:.6}
+.mode-card.red::before{background:linear-gradient(90deg,transparent,var(--red),transparent);opacity:.6}
+.mode-card.blue::before{background:linear-gradient(90deg,transparent,var(--blue),transparent);opacity:.6}
+.mode-card:active{transform:scale(.97);background:var(--card2)}
+.mode-ico{font-size:26px;margin-bottom:10px}
+.mode-name{font-size:15px;font-weight:700;margin-bottom:3px}
+.mode-sub{font-size:11px;color:var(--muted);line-height:1.4}
+.mode-count{position:absolute;top:14px;right:14px;font-size:10px;
+  font-weight:700;padding:3px 8px;border-radius:10px;background:rgba(255,255,255,.07)}
+
+/* ——— THEMES ——— */
+#themes{background:var(--bg)}
+.nav-bar{display:flex;align-items:center;gap:14px;padding:calc(14px + var(--st)) 20px 14px;
+  flex-shrink:0;border-bottom:0.5px solid rgba(255,255,255,.06)}
+.back-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.07);
+  border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;flex-shrink:0}
+.nav-title{font-size:17px;font-weight:700}
+.theme-list{flex:1;padding:12px 16px calc(20px + var(--sb));}
+.theme-row{background:var(--card);border:0.5px solid rgba(255,255,255,.07);
+  border-radius:16px;padding:16px 18px;margin-bottom:9px;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;
+  transition:background .2s}
+.theme-row:active{background:var(--card2)}
+.theme-name{font-size:15px;font-weight:600}
+.theme-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.theme-badge{display:flex;align-items:center;gap:6px}
+.t-count{font-size:12px;font-weight:600;color:var(--muted)}
+.t-arrow{font-size:16px;color:rgba(255,255,255,.25)}
+
+/* ——— TRAIN ——— */
+#train{background:var(--bg)}
+.train-head{display:flex;align-items:center;gap:12px;
+  padding:calc(14px + var(--st)) 20px 12px;flex-shrink:0}
+.prog-wrap{flex:1}
+.prog-bar-bg{height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-bottom:6px}
+.prog-bar-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .4s}
+.prog-txt{font-size:12px;color:var(--muted)}
+.serie-badge{display:flex;align-items:center;gap:4px;padding:5px 12px;
+  border-radius:20px;background:rgba(255,80,80,.1);border:0.5px solid rgba(255,80,80,.2);
+  font-size:11px;font-weight:700;color:var(--red);flex-shrink:0}
+.serie-badge.on{background:rgba(50,200,100,.1);border-color:rgba(50,200,100,.25);color:var(--green)}
+
+.train-body{flex:1;display:flex;flex-direction:column;padding:0 18px;overflow:hidden}
+
+/* QUESTION CARD */
+.q-card{background:linear-gradient(145deg,#1a1a2e,#16162a);
+  border:0.5px solid rgba(201,168,76,.2);border-radius:22px;
+  padding:20px 20px 16px;flex-shrink:0;position:relative;overflow:hidden}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.6}
+.q-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.q-cat{font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--gold3);border:0.5px solid rgba(201,168,76,.25);
+  border-radius:10px;padding:3px 10px;color:var(--gold);font-weight:600}
+.q-num{font-size:10px;color:rgba(255,255,255,.3);font-family:monospace}
+.q-pub{font-size:9px;color:var(--muted);padding:3px 8px;border-radius:8px;
+  background:rgba(255,255,255,.05);border:0.5px solid rgba(255,255,255,.08)}
+.q-ctx{font-size:11px;color:rgba(255,255,255,.45);margin-bottom:10px;
+  padding:5px 10px;background:rgba(255,255,255,.04);border-radius:8px;
+  border-left:2px solid var(--gold);line-height:1.4}
+.q-text{font-size:16px;font-weight:600;line-height:1.5;font-style:italic;
+  color:rgba(255,255,255,.92);margin-bottom:14px}
+.q-text::before{content:'" ';color:var(--gold);font-style:normal;font-size:20px;line-height:0;vertical-align:-4px}
+.q-text::after{content:' "';color:var(--gold);font-style:normal;font-size:20px;line-height:0;vertical-align:-4px}
+.q-listen{display:flex;align-items:center;gap:8px;padding:10px 14px;
+  background:rgba(201,168,76,.08);border:0.5px solid rgba(201,168,76,.2);
+  border-radius:12px;cursor:pointer;font-size:13px;font-weight:600;color:var(--gold);
+  transition:background .2s;font-family:inherit;width:fit-content}
+.q-listen:active{background:rgba(201,168,76,.18)}
+
+/* MIC SECTION */
+.mic-section{margin-top:14px;flex-shrink:0}
+.mic-btn{width:100%;padding:14px;border-radius:16px;
+  background:rgba(255,255,255,.05);border:0.5px solid rgba(255,255,255,.12);
+  color:var(--text);font-size:14px;font-weight:600;cursor:pointer;
+  font-family:inherit;display:flex;align-items:center;justify-content:center;
+  gap:10px;transition:all .2s}
+.mic-btn.recording{background:rgba(255,80,80,.12);border-color:rgba(255,80,80,.35);
+  color:var(--red);animation:mic-pulse 1.2s ease-in-out infinite}
+@keyframes mic-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,80,80,.25)}
+  50%{box-shadow:0 0 0 12px rgba(255,80,80,0)}}
+.mic-dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+.transcript-box{min-height:48px;margin-top:10px;padding:12px 16px;
+  background:rgba(255,255,255,.04);border:0.5px solid rgba(255,255,255,.08);
+  border-radius:12px;font-size:13px;color:var(--muted);line-height:1.5;
+  font-style:italic;transition:all .3s}
+.transcript-box.active{color:var(--text);border-color:rgba(255,255,255,.18)}
+
+/* KEYWORD SCORE */
+.kw-score-wrap{margin-top:10px;display:none}
+.kw-score-wrap.show{display:block}
+.kw-score-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.kw-score-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.kw-score-pct{font-size:20px;font-weight:700}
+.kw-bar-bg{height:6px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden}
+.kw-bar-fill{height:100%;border-radius:4px;transition:width .4s,background .4s}
+.kw-words{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.kw-chip{padding:4px 10px;border-radius:10px;font-size:11px;font-weight:600}
+.kw-hit{background:rgba(50,200,100,.15);border:0.5px solid rgba(50,200,100,.3);color:var(--green)}
+.kw-miss{background:rgba(255,80,80,.08);border:0.5px solid rgba(255,80,80,.15);color:rgba(255,80,80,.6);display:none}
+.kw-miss.revealed{display:inline-flex}
+.kw-suggest{margin-top:10px;padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;text-align:center;display:none}
+.kw-suggest.show{display:block}
+.kw-all-wrap{margin-top:14px;padding:12px 16px;background:rgba(201,168,76,.06);
+  border:0.5px solid rgba(201,168,76,.2);border-radius:14px;display:none}
+.kw-all-wrap.show{display:block}
+.kw-all-title{font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--gold);font-weight:600;margin-bottom:8px}
+.kw-all-chips{display:flex;flex-wrap:wrap;gap:5px}
+.kw-all-chip{padding:4px 10px;border-radius:10px;font-size:11px;font-weight:600;
+  background:rgba(201,168,76,.1);border:0.5px solid rgba(201,168,76,.25);color:var(--gold2)}
+
+/* REVEAL */
+.reveal-btn{width:100%;margin-top:14px;padding:15px;border-radius:16px;
+  background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(139,94,26,.1));
+  border:0.5px solid rgba(201,168,76,.3);color:var(--gold2);
+  font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+  letter-spacing:.04em;transition:all .2s;flex-shrink:0}
+.reveal-btn:active{opacity:.8}
+.reveal-btn.revealed{opacity:.4;pointer-events:none}
+
+/* ANSWER CARD */
+.a-card{background:linear-gradient(145deg,#0f1f10,#0a180b);
+  border:0.5px solid rgba(50,200,100,.2);border-radius:22px;
+  padding:18px 20px 16px;margin-top:14px;position:relative;overflow:hidden;
+  flex-shrink:0;display:none}
+.a-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
+  background:linear-gradient(90deg,transparent,var(--green),transparent);opacity:.5}
+.a-card.show{display:block}
+.a-lbl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--green);margin-bottom:10px;font-weight:600}
+.a-text{font-size:14px;color:rgba(255,255,255,.9);line-height:1.6;margin-bottom:12px}
+.a-listen{display:flex;align-items:center;gap:8px;padding:8px 14px;
+  background:rgba(50,200,100,.08);border:0.5px solid rgba(50,200,100,.2);
+  border-radius:12px;cursor:pointer;font-size:12px;font-weight:600;color:var(--green);
+  transition:background .2s;font-family:inherit;width:fit-content;margin-bottom:14px}
+.a-listen:active{background:rgba(50,200,100,.18)}
+
+/* RATING */
+.rating-row{display:flex;gap:8px}
+.r-btn{flex:1;padding:10px 6px;border-radius:12px;border:0.5px solid;
+  font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;
+  text-align:center;transition:all .2s}
+.r-easy{color:var(--green);border-color:rgba(50,200,100,.3);background:rgba(50,200,100,.08)}
+.r-easy:active,.r-easy.sel{background:rgba(50,200,100,.25)}
+.r-med{color:var(--orange);border-color:rgba(232,168,76,.3);background:rgba(232,168,76,.08)}
+.r-med:active,.r-med.sel{background:rgba(232,168,76,.25)}
+.r-hard{color:var(--red);border-color:rgba(255,80,80,.3);background:rgba(255,80,80,.08)}
+.r-hard:active,.r-hard.sel{background:rgba(255,80,80,.25)}
+
+/* NAV ARROWS */
+.train-nav{display:flex;gap:10px;padding:10px 18px 8px;flex-shrink:0}
+.nav-prev,.nav-next{flex:1;padding:14px;border-radius:14px;
+  background:var(--card);border:0.5px solid rgba(255,255,255,.1);
+  color:var(--text);font-size:14px;font-weight:600;cursor:pointer;
+  font-family:inherit;transition:background .2s}
+.nav-prev:active,.nav-next:active{background:var(--card2)}
+.nav-prev:disabled,.nav-next:disabled{opacity:.3;pointer-events:none}
+.nav-next{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(139,94,26,.1));
+  border-color:rgba(201,168,76,.25);color:var(--gold2)}
+.bnav{display:flex;justify-content:space-around;flex-shrink:0;
+  padding:6px 0 calc(10px + var(--sb));
+  border-top:0.5px solid rgba(255,255,255,.08);
+  background:rgba(12,12,20,.95);backdrop-filter:blur(12px)}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;
+  font-size:10px;font-weight:500;color:var(--muted);
+  padding:4px 22px;cursor:pointer;transition:color .2s}
+.ni:active{color:#fff}
+.ni svg{width:20px;height:20px;stroke:currentColor;fill:none;
+  stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.rapport-badge{display:inline-flex;align-items:center;gap:6px;
+  background:rgba(50,200,100,.1);border:0.5px solid rgba(50,200,100,.3);
+  border-radius:20px;padding:6px 16px;font-size:12px;color:var(--green);
+  font-weight:600;margin:0 18px 6px;flex-shrink:0}
+
+/* ——— RESULTS ——— */
+#results{background:var(--bg);justify-content:center;align-items:center}
+.res-inner{padding:40px 28px calc(40px + var(--sb));text-align:center;width:100%}
+.res-icon{font-size:56px;margin-bottom:16px}
+.res-h{font-size:26px;font-weight:700;margin-bottom:8px;letter-spacing:-.02em}
+.res-s{font-size:14px;color:var(--muted);line-height:1.5;margin-bottom:28px}
+.res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.res-box{background:var(--card);border:0.5px solid rgba(255,255,255,.07);
+  border-radius:16px;padding:16px 8px;text-align:center}
+.res-num{font-size:28px;font-weight:700;margin-bottom:4px}
+.res-lbl{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.res-badge{display:inline-flex;align-items:center;gap:6px;
+  padding:8px 18px;border-radius:20px;
+  background:rgba(201,168,76,.12);border:0.5px solid rgba(201,168,76,.3);
+  font-size:13px;color:var(--gold);font-weight:600;margin-bottom:24px}
+.res-actions{display:flex;flex-direction:column;gap:10px}
+
+/* ——— ADMIN PW ——— */
+#apov{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.8);
+  backdrop-filter:blur(10px);display:flex;align-items:flex-end;
+  justify-content:center;padding:0;opacity:0;pointer-events:none;transition:opacity .3s}
 #apov.show{opacity:1;pointer-events:all}
-.pw-box{background:var(--surface);border-radius:26px 26px 0 0;border-top:0.5px solid rgba(255,255,255,.1);padding:24px 22px calc(28px + var(--sb));width:100%;max-width:480px}
-.pw-hdl{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.18);margin:0 auto 18px}
+.pw-box{background:var(--surface);border-radius:26px 26px 0 0;
+  border-top:0.5px solid rgba(255,255,255,.1);
+  padding:24px 22px calc(28px + var(--sb));width:100%;max-width:480px}
+.pw-hdl{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.18);
+  margin:0 auto 18px}
 
-/* TOAST */
-#toast{position:fixed;top:calc(var(--st) + 12px);left:16px;right:16px;border-radius:14px;padding:14px 18px;font-size:14px;font-weight:500;text-align:center;transform:translateY(-110px);opacity:0;transition:all .35s cubic-bezier(.4,0,.2,1);z-index:999}
+/* ——— TOAST ——— */
+#toast{position:fixed;top:calc(var(--st) + 12px);left:16px;right:16px;
+  border-radius:14px;padding:14px 18px;font-size:14px;font-weight:500;
+  text-align:center;transform:translateY(-110px);opacity:0;
+  transition:all .35s cubic-bezier(.4,0,.2,1);z-index:999;pointer-events:none}
 #toast.show{transform:translateY(0);opacity:1}
 .t-ok{background:rgba(50,200,100,.92);color:#fff}
 .t-er{background:rgba(255,80,80,.92);color:#fff}
@@ -197,21 +360,20 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);
 </head>
 <body>
 
-<!-- LOCK -->
+<!-- ═══ LOCK ═══ -->
 <div id="lock" class="screen hidden">
   <div class="lock-top">
     <div class="lock-icon">🎯</div>
-    <div class="lock-h">Coach Objections</div>
-    <div class="lock-s">Application réservée aux consultantes Chogan autorisées.</div>
-    <div class="lock-ico2">🔒</div>
+    <div class="lock-h">Coach Vocal Chogan</div>
+    <div class="lock-s">Entraînement aux objections clients et professionnelles. Réservé aux consultantes autorisées.</div>
   </div>
   <div class="sheet">
     <div class="sheet-h">Demander l'accès</div>
-    <div class="sheet-s">Renseignez vos coordonnées — l'admin reçoit un email instantanément.</div>
-    <label class="form-label">Votre prénom</label>
-    <input class="finput" id="rn" type="text" placeholder="Prénom">
-    <label class="form-label">Votre nom</label>
-    <input class="finput" id="rl" type="text" placeholder="Nom de famille">
+    <div class="sheet-s">L'administratrice reçoit un email instantanément.</div>
+    <label class="form-label">Prénom</label>
+    <input class="finput" id="rn" type="text" placeholder="Votre prénom">
+    <label class="form-label">Nom</label>
+    <input class="finput" id="rl" type="text" placeholder="Votre nom">
     <label class="form-label">Email ou téléphone</label>
     <input class="finput" id="rc" type="text" placeholder="email@exemple.com">
     <button class="btn-g" id="req-btn" onclick="sendRequest()">📩 Envoyer la demande</button>
@@ -223,12 +385,12 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);
   </div>
 </div>
 
-<!-- PENDING -->
+<!-- ═══ PENDING ═══ -->
 <div id="pend" class="screen hidden">
   <div class="pend-top">
     <div class="pulse">📬</div>
     <div class="pend-h">Demande envoyée !</div>
-    <div class="pend-s">L'administratrice a reçu votre demande par email. Dès validation, vous recevrez votre code d'accès.</div>
+    <div class="pend-s">L'administratrice a reçu votre demande. Vous recevrez votre code dès validation.</div>
     <div class="pend-box" id="pend-box"></div>
   </div>
   <div class="sheet" style="margin-top:12px">
@@ -241,53 +403,217 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);
   </div>
 </div>
 
-<!-- MAIN -->
-<div id="main" class="screen hidden">
-  <div class="status">
-    <div class="s-time" id="clk">--:--</div>
-    <div style="font-size:11px;opacity:.5">300 objections</div>
-  </div>
-  <div class="wh">
-    <div>
-      <div class="wh-b">Chogan · Formation</div>
-      <div class="wh-t" id="wh-title">Coach Objections</div>
-    </div>
-    <div class="wh-av" id="av" onclick="avTap()">
-      <span id="av-initials">CC</span>
-      <div class="av-dot"></div>
+<!-- ═══ MENU ═══ -->
+<div id="menu" class="screen hidden">
+  <div class="menu-head">
+    <div class="menu-row">
+      <div>
+        <div class="menu-brand">Chogan · Formation</div>
+        <div class="menu-title">Coach Vocal</div>
+      </div>
+      <div class="menu-av" id="av" onclick="avTap()">
+        <span id="av-initials">CC</span>
+        <div class="av-dot"></div>
+      </div>
     </div>
   </div>
 
-  <!-- FILTER PILLS -->
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-box">
+      <div class="stat-num" id="st-serie" style="color:var(--orange)">0</div>
+      <div class="stat-lbl">🔥 Série</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" id="st-total" style="color:var(--gold)">0</div>
+      <div class="stat-lbl">Traitées</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" id="st-mast" style="color:var(--green)">0</div>
+      <div class="stat-lbl">Maîtrisées</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" id="st-score" style="color:var(--blue)">0%</div>
+      <div class="stat-lbl">Score</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
   <div class="filter-row" id="filter-row">
-    <button class="fpill active" onclick="setFilter('Tout')">🌟 Tout</button>
-    <button class="fpill" onclick="setFilter('Général')">🌿 Général</button>
-    <button class="fpill" onclick="setFilter('B2C')">👤 Client</button>
-    <button class="fpill" onclick="setFilter('B2B')">🤝 Pro</button>
+    <button class="f-chip on" data-f="all" onclick="setFilter('all')">🌟 Tout</button>
+    <button class="f-chip" data-f="gen" onclick="setFilter('gen')">🌿 Général</button>
+    <button class="f-chip" data-f="b2c" onclick="setFilter('b2c')">👤 Client B2C</button>
+    <button class="f-chip" data-f="b2b" onclick="setFilter('b2b')">🤝 Pro B2B</button>
   </div>
 
-  <!-- PROGRESS -->
-  <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
-  <div class="progress-info">
-    <span class="progress-txt" id="prog-txt">0 / 20 vues</span>
-    <span class="progress-txt" id="prog-set">Série 1</span>
+  <div class="section-lbl">MODE D'ENTRAÎNEMENT</div>
+
+  <div class="modes-grid" id="modes-grid">
+    <div class="mode-card gold" onclick="startMode('random')">
+      <div class="mode-ico">🎲</div>
+      <div class="mode-name">Aléatoire</div>
+      <div class="mode-sub">Objections au hasard pour une pratique dynamique</div>
+      <div class="mode-count" id="mc-random">—</div>
+    </div>
+    <div class="mode-card green" onclick="startMode('theme')">
+      <div class="mode-ico">📚</div>
+      <div class="mode-name">Par Thème</div>
+      <div class="mode-sub">Choisissez une catégorie spécifique</div>
+      <div class="mode-count" id="mc-theme">—</div>
+    </div>
+    <div class="mode-card red" onclick="startMode('hard')">
+      <div class="mode-ico">🔥</div>
+      <div class="mode-name">Difficiles</div>
+      <div class="mode-sub">Celles que vous avez notées difficile</div>
+      <div class="mode-count" id="mc-hard">—</div>
+    </div>
+    <div class="mode-card blue" onclick="startMode('new')">
+      <div class="mode-ico">✨</div>
+      <div class="mode-name">Nouvelles</div>
+      <div class="mode-sub">Objections pas encore traitées</div>
+      <div class="mode-count" id="mc-new">—</div>
+    </div>
   </div>
 
-  <div class="cards-scroll" id="cards-scroll"></div>
+  <div style="flex:1"></div>
+  <div style="padding:12px 20px calc(20px + var(--sb));text-align:center">
+    <div style="font-size:11px;color:rgba(255,255,255,.2)">🎤 Apprenez à répondre à voix haute</div>
+  </div>
+</div>
+
+<!-- ═══ THEMES ═══ -->
+<div id="themes" class="screen hidden">
+  <div class="nav-bar">
+    <button class="back-btn" onclick="SS('menu')">←</button>
+    <div class="nav-title">Choisissez un thème</div>
+  </div>
+  <div class="theme-list scroll-y" id="theme-list"></div>
+</div>
+
+<!-- ═══ TRAIN ═══ -->
+<div id="train" class="screen hidden">
+  <div class="train-head">
+    <button class="back-btn" onclick="SS('menu')">←</button>
+    <div class="prog-wrap">
+      <div class="prog-bar-bg"><div class="prog-bar-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="prog-txt" id="prog-txt">0 / 0</div>
+    </div>
+    <div class="serie-badge" id="serie-badge">🔥 0</div>
+  </div>
+
+  <div class="train-body scroll-y" id="train-body">
+    <!-- QUESTION CARD -->
+    <div class="q-card">
+      <div class="q-meta">
+        <div class="q-cat" id="q-cat">Catégorie</div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <div class="q-pub" id="q-pub"></div>
+          <div class="q-num" id="q-num">#001</div>
+        </div>
+      </div>
+      <div class="q-ctx" id="q-ctx"></div>
+      <div class="q-text" id="q-text">Chargement…</div>
+      <button class="q-listen" onclick="speakQ()">
+        <span id="q-speaker">🔊</span> <span>Écouter l'objection</span>
+      </button>
+    </div>
+
+    <!-- MIC -->
+    <div class="mic-section">
+      <button class="mic-btn" id="mic-btn" onclick="toggleRecording()">
+        <div class="mic-dot"></div>
+        <span id="mic-txt">🎤 Votre réponse à voix haute — Appuyez pour parler</span>
+      </button>
+      <div class="transcript-box" id="transcript">Votre réponse apparaîtra ici…</div>
+
+      <!-- KEYWORD SCORE -->
+      <div class="kw-score-wrap" id="kw-wrap">
+        <div class="kw-score-top">
+          <div class="kw-score-label">🎯 Mots-clés détectés</div>
+          <div class="kw-score-pct" id="kw-pct">0%</div>
+        </div>
+        <div class="kw-bar-bg"><div class="kw-bar-fill" id="kw-bar" style="width:0%"></div></div>
+        <div class="kw-words" id="kw-words"></div>
+        <div class="kw-suggest" id="kw-suggest"></div>
+        <div class="kw-all-wrap" id="kw-all-wrap">
+          <div class="kw-all-title">💬 Phrase attendue</div>
+          <div class="kw-all-chips" id="kw-all-chips"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVEAL -->
+    <button class="reveal-btn" id="reveal-btn" onclick="revealAnswer()">✦ RÉVÉLER LA RÉPONSE IDÉALE ✦</button>
+
+    <!-- ANSWER CARD -->
+    <div class="a-card" id="a-card">
+      <div class="a-lbl">✓ Réponse recommandée</div>
+      <div class="a-text" id="a-text">…</div>
+      <button class="a-listen" onclick="speakA()">🔊 Écouter la réponse</button>
+      <div class="rating-row">
+        <button class="r-btn r-easy" onclick="rateCard('easy')">😊 Facile</button>
+        <button class="r-btn r-med" onclick="rateCard('med')">🤔 Moyen</button>
+        <button class="r-btn r-hard" onclick="rateCard('hard')">😅 Difficile</button>
+      </div>
+    </div>
+    <div style="height:20px;flex-shrink:0"></div>
+  </div>
+
+  <div class="rapport-badge" id="rapport-badge" style="display:none;margin:0 18px 6px">
+    📊 Rapport envoyé à l'admin ✓
+  </div>
+
+  <div class="train-nav">
+    <button class="nav-prev" id="nav-prev" onclick="prevCard()">← Précédent</button>
+    <button class="nav-next" id="nav-next" onclick="nextCard()">Suivant →</button>
+  </div>
 
   <div class="bnav">
-    <div class="ni on">
-      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-      Cartes
+    <div class="ni" onclick="SS('menu')">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      Menu
     </div>
-    <div class="ni" onclick="newSession()">
+    <div class="ni" onclick="restartFromNav()">
       <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.65"/></svg>
-      20 nouvelles
+      Recommencer
+    </div>
+    <div class="ni" onclick="sendReportManual()">
+      <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+      Rapport
     </div>
   </div>
 </div>
 
-<!-- ADMIN PW -->
+<!-- ═══ RESULTS ═══ -->
+<div id="results" class="screen hidden">
+  <div class="res-inner">
+    <div class="res-icon" id="res-icon">🏆</div>
+    <div class="res-h">Session terminée !</div>
+    <div class="res-s" id="res-s">Voici vos résultats de session.</div>
+    <div class="res-grid">
+      <div class="res-box">
+        <div class="res-num" style="color:var(--green)" id="res-easy">0</div>
+        <div class="res-lbl">Faciles</div>
+      </div>
+      <div class="res-box">
+        <div class="res-num" style="color:var(--orange)" id="res-med">0</div>
+        <div class="res-lbl">Moyennes</div>
+      </div>
+      <div class="res-box">
+        <div class="res-num" style="color:var(--red)" id="res-hard">0</div>
+        <div class="res-lbl">Difficiles</div>
+      </div>
+    </div>
+    <div class="res-badge" id="res-badge">📊 Score : 0%</div>
+    <div class="res-actions">
+      <button class="btn-g" onclick="restartSession()">✦ Nouvelle session</button>
+      <button class="btn-o" onclick="retryHard()">🔥 Retravailler les difficiles</button>
+      <button class="btn-o" onclick="SS('menu')">← Retour au menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ADMIN PW ═══ -->
 <div id="apov">
   <div class="pw-box">
     <div class="pw-hdl"></div>
@@ -299,459 +625,235 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);
   </div>
 </div>
 
+<!-- ═══ TOAST ═══ -->
 <div id="toast"></div>
 
 <script>
-/* CONFIG */
+/* ════════════════════════════════════════
+   🔧 CONFIGURATION
+════════════════════════════════════════ */
 const ACCESS_CODE = "CHOGAN2025";
 const ADMIN_CODE  = "ADMIN#2025";
 const ADMIN_EMAIL = "ouadi.nej@gmail.com";
-const W3F_KEY     = "eedbc8ee-c8ab-4c5b-a04a-db28b4e472e3";
+const W3F_KEY     = "154de2bd-3ceb-4a28-a86b-5a6b3b53f960";
+/* ════════════════════════════════════════ */
 
-const ALL_OBJ = [
-  {n:"7",cat:"Alcool",type:"Général",q:"Ça sent trop l\'alcool au début.",a:"C\'est normal, l\'alcool transporte l\'essence. Attendez 30 secondes qu\'il s\'évapore pour découvrir les 30% d\'huiles essentielles.",kw:["Transporteur", "30 sec", "Évaporation", "Essences", "Naturel"]},
-  {n:"23",cat:"Allergie",type:"Général",q:"J\'ai la peau très sensible.",a:"Vaporisez sur vos vêtements ou vos cheveux. Vous profiterez de l\'odeur toute la journée sans aucun contact cutané.",kw:["Vêtements", "Cheveux", "Sans contact", "Filtré", "Certifié"]},
-  {n:"95",cat:"Allergie",type:"Général",q:"Je suis allergique au pollen.",a:"Nos essences sont filtrées et contrôlées. Testez sur un vêtement, vous n\'aurez aucun contact avec les composants naturels.",kw:["Vêtements", "Cheveux", "Sans contact", "Filtré", "Certifié"]},
-  {n:"58",cat:"Application",type:"Général",q:"Je préfère les parfums à bille (roll-on).",a:"Nos sprays sont très précis, mais vous pouvez aussi vaporiser un peu de parfum sur vos poignets et tapoter (sans frotter) pour un effet similaire.",kw:["Poignets", "Oreilles", "Chaleur", "Diffusion", "Précis"]},
-  {n:"115",cat:"B2C - Application",type:"B2C",q:"Je préfère les vapo de sac rechargeables.",a:"Nos 35ml sont si compacts qu\'ils remplacent avantageusement un vapo de sac.",kw:["Poignets", "Oreilles", "Chaleur", "Diffusion", "Précis"]},
-  {n:"134",cat:"B2C - Application",type:"B2C",q:"Où mettre le parfum ?",a:"Derrière les oreilles et sur les poignets, là où la chaleur diffuse le mieux.",kw:["Poignets", "Oreilles", "Chaleur", "Diffusion", "Précis"]},
-  {n:"128",cat:"B2C - Budget",type:"B2C",q:"Je préfère m\'acheter des vêtements.",a:"Un beau parfum finit une tenue. C\'est l\'accessoire invisible qui fait la différence.",kw:["15ml", "Format test", "Petit prix", "Mensuel", "Accessible"]},
-  {n:"102",cat:"B2C - Cadeau",type:"B2C",q:"J\'ai peur de faire un cadeau \'cheap\'.",a:"Offrez-le avec nos coffrets bain, cela crée un rituel bien-être complet et valorisant.",kw:["Coffret", "Émotion", "Complet", "Sécurité", "Prix malin"]},
-  {n:"127",cat:"B2C - Cadeau",type:"B2C",q:"La personne est difficile.",a:"Une carte cadeau Chogan lui permettra de choisir elle-même avec ma mallette.",kw:["Coffret", "Émotion", "Complet", "Sécurité", "Prix malin"]},
-  {n:"145",cat:"B2C - Cadeau",type:"B2C",q:"C\'est pour un homme qui ne met rien.",a:"Le gel douche parfumé est l\'entrée parfaite dans l\'univers Chogan.",kw:["Coffret", "Émotion", "Complet", "Sécurité", "Prix malin"]},
-  {n:"103",cat:"B2C - Choix",type:"B2C",q:"Je préfère l\'original pour être sûre.",a:"Faites le test aveugle. 9 personnes sur 10 ne voient pas la différence olfactive, seulement la différence de prix.",kw:["Jumeau olfactif", "Notes", "Profil", "Guidé", "Personnalisé"]},
-  {n:"125",cat:"B2C - Choix",type:"B2C",q:"Je cherche une odeur de vanille pure.",a:"Le numéro XXX est une vanille gourmande exceptionnelle, sans être écoeurante.",kw:["Jumeau olfactif", "Notes", "Profil", "Guidé", "Personnalisé"]},
-  {n:"120",cat:"B2C - Comparaison",type:"B2C",q:"L\'autre marque est plus connue.",a:"La notoriété se paie cher. Préférez la qualité réelle à la célébrité de l\'emballage.",kw:["Grasse", "Qualité", "Tenue", "Sillage", "Maisons luxe"]},
-  {n:"144",cat:"B2C - Composition",type:"B2C",q:"Y a-t-il des perturbateurs endocriniens ?",a:"Nous respectons scrupuleusement la réglementation REACH pour votre sécurité.",kw:["Huiles pures", "Sans eau", "30%", "Certifié", "REACH"]},
-  {n:"150",cat:"B2C - Conclusion",type:"B2C",q:"Merci, j\'en prends deux !",a:"Excellent choix, vous allez faire des envieuses !",kw:["Testeur", "Rappel", "Poignet", "24h", "Signature"]},
-  {n:"106",cat:"B2C - Confiance",type:"B2C",q:"Vous travaillez pour eux depuis longtemps ?",a:"Assez pour avoir vu des centaines de clientes ravies qui ne retournent plus jamais en parfumerie classique.",kw:["Bouche-à-oreille", "Satisfaction", "Traçable", "Italien", "Certifié"]},
-  {n:"130",cat:"B2C - Confiance",type:"B2C",q:"C\'est une arnaque pyramidale ?",a:"Non, c\'est de la vente directe. Je gagne une commission car je vous conseille, c\'est tout.",kw:["Bouche-à-oreille", "Satisfaction", "Traçable", "Italien", "Certifié"]},
-  {n:"139",cat:"B2C - Confiance",type:"B2C",q:"Comment savoir si c\'est du vrai parfum ?",a:"Le label \'Extrait de Parfum\' est protégé. Nos 30% d\'essence le prouvent.",kw:["Bouche-à-oreille", "Satisfaction", "Traçable", "Italien", "Certifié"]},
-  {n:"142",cat:"B2C - Couleur",type:"B2C",q:"Le jus a jauni.",a:"C\'est l\'oxydation naturelle de la vanille ou des fleurs. L\'odeur reste intacte.",kw:["Qualité", "Prix", "Essences", "Certifié", "Grasse"]},
-  {n:"114",cat:"B2C - Échantillons",type:"B2C",q:"Je veux tester avant d\'ouvrir le flacon.",a:"C\'est pour ça que je suis là avec mes testeurs ! On valide ensemble avant l\'achat.",kw:["Qualité", "Prix", "Essences", "Certifié", "Grasse"]},
-  {n:"119",cat:"B2C - Économie",type:"B2C",q:"C\'est un achat de luxe inutile.",a:"Se sentir bien est-il inutile ? C\'est un soin pour le moral à prix mini.",kw:["Prix usine", "Toute année", "Direct", "Soldes battues", "Imbattable"]},
-  {n:"133",cat:"B2C - Éthique",type:"B2C",q:"L\'emballage est en plastique ?",a:"Nous réduisons le plastique au minimum vital pour la protection du transport.",kw:["Non testé", "Normes UE", "Vegan", "Naturel", "Responsable"]},
-  {n:"146",cat:"B2C - Fidélité",type:"B2C",q:"Je préfère cumuler des points chez Sephora.",a:"Nos prix sont déjà plus bas que n\'importe quelle récompense de fidélité.",kw:["Alterner", "Découverte", "Garde-robe", "Nez habitué", "Saisons"]},
-  {n:"135",cat:"B2C - Format",type:"B2C",q:"Je veux un format voyage.",a:"Le 35ml est parfait pour l\'avion et le sac à main.",kw:["35ml", "15ml", "Voyage", "Rechargeable", "Nomade"]},
-  {n:"116",cat:"B2C - Genre",type:"B2C",q:"C\'est trop fleuri pour un homme.",a:"Nous avons des notes de cuir et de tabac très masculines. Oubliez les fleurs !",kw:["Unisexe", "Boisé", "Cuiré", "Masculin", "Sans genre"]},
-  {n:"118",cat:"B2C - Identité",type:"B2C",q:"Je veux une odeur de propre.",a:"Essayez nos fragrances à base de musc blanc ou de coton, c\'est la pureté absolue.",kw:["Signature", "PH peau", "Unique", "Personnel", "Exclusif"]},
-  {n:"137",cat:"B2C - Identité",type:"B2C",q:"Je veux sentir comme une star.",a:"Nos inspirations correspondent aux parfums portés par les plus grandes célébrités.",kw:["Signature", "PH peau", "Unique", "Personnel", "Exclusif"]},
-  {n:"132",cat:"B2C - Ingrédients",type:"B2C",q:"Est-ce que ça contient des huiles essentielles ?",a:"Oui, c\'est la base de nos extraits de parfum, d\'où leur qualité.",kw:["Huiles essentielles", "INCI", "Parabènes", "Naturel", "Tracé"]},
-  {n:"129",cat:"B2C - Luxe",type:"B2C",q:"Je n\'ai pas les codes du luxe.",a:"Chogan, c\'est le luxe pour tous, sans chichis, juste le plaisir de l\'odeur.",kw:["Contenu premium", "Qualité égale", "Pas de décor", "Jus pur", "Accessible"]},
-  {n:"113",cat:"B2C - Naturel",type:"B2C",q:"Est-ce que c\'est vegan ?",a:"Oui, nous n\'utilisons aucun composant d\'origine animale dans nos formulations.",kw:["Essences", "Minimaliste", "Fixateurs", "Naturel", "Certifié"]},
-  {n:"148",cat:"B2C - Nouveauté",type:"B2C",q:"J\'aime changer tous les jours.",a:"Avec nos prix, vous pouvez avoir 4 parfums différents pour le prix d\'un seul.",kw:["Plusieurs flacons", "Alterner", "Humeur", "Météo", "Garde-robe"]},
-  {n:"131",cat:"B2C - Odeur",type:"B2C",q:"Ça ne sent plus rien sur ma peau après 1h.",a:"Demandez à votre entourage, votre nez s\'est juste habitué !",kw:["PH", "Réaction peau", "Unique", "Vivant", "Personnalisé"]},
-  {n:"107",cat:"B2C - Origine",type:"B2C",q:"Grasse c\'est loin, comment savoir ?",a:"Tous nos certificats d\'origine sont consultables. La transparence est la base de notre relation.",kw:["Grasse", "Italie", "Circuit court", "Européen", "Traçable"]},
-  {n:"104",cat:"B2C - Prix",type:"B2C",q:"C\'est encore trop cher pour mon budget étudiant.",a:"Prenez le format 15ml, il dure un mois pour le prix de deux cafés.",kw:["25 cts/jour", "4 mois", "30%", "Extrait", "Économie"]},
-  {n:"140",cat:"B2C - Prix",type:"B2C",q:"C\'est louche d\'être si peu cher.",a:"C\'est la magie du circuit court. Pas de loyer de boutique, pas de pub.",kw:["25 cts/jour", "4 mois", "30%", "Extrait", "Économie"]},
-  {n:"147",cat:"B2C - Proximité",type:"B2C",q:"C\'est loin de chez moi.",a:"Je me déplace ou je vous envoie ça par colis, au choix.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"112",cat:"B2C - Puissance",type:"B2C",q:"C\'est trop entêtant.",a:"Prenez une fragrance \'eau fraîche\' dans notre gamme, c\'est plus léger et printanier.",kw:["1 pression", "Économie", "Extrait", "Concentration", "Longue durée"]},
-  {n:"149",cat:"B2C - Puissance",type:"B2C",q:"C\'est trop léger.",a:"Essayez nos fragrances orientales, elles ont un sillage très puissant.",kw:["1 pression", "Économie", "Extrait", "Concentration", "Longue durée"]},
-  {n:"122",cat:"B2C - Pureté",type:"B2C",q:"C\'est trop gras.",a:"C\'est l\'essence pure. C\'est ce qui fait que votre parfum dure jusqu\'à demain.",kw:["Huile essentielle", "Concentration", "Tapoter", "Absorber", "Naturel"]},
-  {n:"101",cat:"B2C - Qualité",type:"B2C",q:"C\'est fabriqué en série, c\'est industriel.",a:"Oui, ce qui assure une qualité constante et un prix imbattable grâce aux économies d\'échelle.",kw:["Constante", "Industriel", "Contrôlé", "Certifié", "Lot"]},
-  {n:"109",cat:"B2C - Routine",type:"B2C",q:"Je ne mets du parfum que le soir.",a:"Le matin, une fragrance fraîche change votre énergie pour toute la journée.",kw:["Alterner", "Découverte", "Nez habitué", "Saisons", "Humeur"]},
-  {n:"136",cat:"B2C - Routine",type:"B2C",q:"J\'en mets trop, j\'ai peur de gêner.",a:"Avec l\'extrait, deux pshitts suffisent. C\'est la clé de l\'élégance.",kw:["Alterner", "Découverte", "Nez habitué", "Saisons", "Humeur"]},
-  {n:"117",cat:"B2C - Saison",type:"B2C",q:"En hiver, le parfum ne se sent pas.",a:"Au contraire, la chaleur des vêtements en laine diffuse parfaitement nos extraits.",kw:["Frais", "Fruité", "Léger", "Boisé", "Adapté"]},
-  {n:"138",cat:"B2C - Saison",type:"B2C",q:"L\'été, le parfum tache avec le soleil.",a:"Vaporisez sur vos cheveux ou vos vêtements pour éviter tout risque.",kw:["Frais", "Fruité", "Léger", "Boisé", "Adapté"]},
-  {n:"121",cat:"B2C - Service",type:"B2C",q:"Vous livrez à domicile ?",a:"Oui, directement chez vous ou sur votre lieu de travail pour vous simplifier la vie.",kw:["Livraison", "Domicile", "Travail", "Rapide", "Pratique"]},
-  {n:"123",cat:"B2C - Sexe",type:"B2C",q:"C\'est pour les femmes mûres.",a:"Nous avons une gamme \'Tendances\' très appréciée par les jeunes actives.",kw:["Unisexe", "Boisé", "Floral", "Libre", "Sans genre"]},
-  {n:"143",cat:"B2C - Sexe",type:"B2C",q:"C\'est trop masculin pour moi.",a:"Beaucoup de femmes adorent les notes boisées. Osez briser les codes !",kw:["Unisexe", "Boisé", "Floral", "Libre", "Sans genre"]},
-  {n:"108",cat:"B2C - Sillage",type:"B2C",q:"Mon mari n\'aime pas les odeurs fortes.",a:"Vaporisez un nuage et traversez-le. Le parfum se déposera avec légèreté.",kw:["30%", "Extrait", "Remarqué", "Signature", "Puissant"]},
-  {n:"124",cat:"B2C - Stock",type:"B2C",q:"Le vapo est bloqué.",a:"Contactez-moi, je procède à l\'échange standard. C\'est la garantie Chogan.",kw:["À l'abri", "Frais", "Obscurité", "24-36 mois", "Conservation"]},
-  {n:"105",cat:"B2C - Tenue",type:"B2C",q:"Est-ce que l\'odeur tourne avec la transpiration ?",a:"L\'extrait est plus stable. Mais vaporisez de préférence sur les zones fraîches comme les poignets ou les vêtements.",kw:["Vêtements", "Lait corps", "Fixer", "24h", "Extrait stable"]},
-  {n:"110",cat:"B2C - Transport",type:"B2C",q:"Ça va couler dans mon sac.",a:"Nos flacons sont sertis. La sécurité est maximale pour vos déplacements.",kw:["35ml", "Cabine", "15ml", "Léger", "Sécurisé"]},
-  {n:"141",cat:"B2C - Usage",type:"B2C",q:"C\'est trop sophistiqué pour aller travailler.",a:"Nous avons des fragrances \'discrètes\' parfaites pour le bureau.",kw:["Quotidien", "Confiance", "Plaisir", "Chaque jour", "Pour soi"]},
-  {n:"126",cat:"B2C - Variété",type:"B2C",q:"C\'est toujours les mêmes parfums.",a:"On vient de recevoir 5 nouvelles inspirations ce matin, voulez-vous les sentir ?",kw:["Nouveautés", "Notes", "Saisons", "Personnalisé", "Large choix"]},
-  {n:"186",cat:"Boutique",type:"B2B",q:"Je n\'ai pas de licence pour vendre du parfum.",a:"En tant que commerçant, la revente de produits cosmétiques est autorisée dans votre objet social habituel.",kw:["Comptoir", "Encaissement", "Bar à parfum", "Mouillettes", "Ambiance"]},
-  {n:"199",cat:"Boutique",type:"B2B",q:"Je n\'ai pas de vitrine.",a:"Le parfum Chogan se vend par le nez, pas par l\'œil. C\'est un produit de comptoir idéal qui se vend lors de l\'encaissement.",kw:["Comptoir", "Encaissement", "Bar à parfum", "Mouillettes", "Ambiance"]},
-  {n:"219",cat:"Boutique",type:"B2B",q:"Je vends des vêtements, pas des cosmétiques.",a:"Le parfum est l\'accessoire de mode ultime. Il complète la tenue. Proposez une senteur qui \'match\' avec le style de votre collection.",kw:["Comptoir", "Encaissement", "Bar à parfum", "Mouillettes", "Ambiance"]},
-  {n:"237",cat:"Boutique",type:"B2B",q:"J\'ai peur que le parfum tache les vêtements.",a:"Nos extraits sont de haute qualité. Comme tout parfum, il faut vaporiser à 15cm, mais ils ne laissent pas de traces grasses.",kw:["Comptoir", "Encaissement", "Bar à parfum", "Mouillettes", "Ambiance"]},
-  {n:"248",cat:"Boutique",type:"B2B",q:"Mes clients préfèrent les marques qu\'ils voient à la télé.",a:"Dites-leur : \'Ici vous payez le produit, pas la star qui fait la pub\'. Les clients adorent ce discours de bon sens.",kw:["Comptoir", "Encaissement", "Bar à parfum", "Mouillettes", "Ambiance"]},
-  {n:"258",cat:"Boutique",type:"B2B",q:"Je ne sais pas comment mettre en scène la mallette.",a:"Placez-la près d\'un miroir avec quelques rubans de satin. Le côté \'bar à parfum\' crée immédiatement l\'attrait visuel.",kw:["Comptoir", "Encaissement", "Bar à parfum", "Mouillettes", "Ambiance"]},
-  {n:"272",cat:"Boutique",type:"B2B",q:"J\'ai peur que ça sente trop fort dans ma boutique de vêtements.",a:"Vaporisez uniquement sur des touches de coton (mouillettes). L\'odeur restera localisée sur votre comptoir d\'accueil.",kw:["Comptoir", "Encaissement", "Bar à parfum", "Mouillettes", "Ambiance"]},
-  {n:"282",cat:"Boutique",type:"B2B",q:"Le parfum est un achat trop personnel.",a:"C\'est vrai, c\'est pourquoi la mallette de testeurs est indispensable. Elle permet au client de s\'approprier l\'odeur avant l\'achat.",kw:["Comptoir", "Encaissement", "Bar à parfum", "Mouillettes", "Ambiance"]},
-  {n:"290",cat:"Boutique",type:"B2B",q:"Je veux des fragrances qui rappellent ma boutique.",a:"Choisissons ensemble une \'odeur signature\' (ex: Ambre ou Musc) que vous vaporisez légèrement pour créer une ambiance.",kw:["Comptoir", "Encaissement", "Bar à parfum", "Mouillettes", "Ambiance"]},
-  {n:"51",cat:"Budget",type:"Général",q:"Je n\'ai pas de budget ce mois-ci.",a:"Je comprends. Je peux vous mettre de côté un format 15ml à petit prix pour que vous ne manquiez pas de votre fragrance préférée.",kw:["15ml", "Format test", "Petit prix", "Mensuel", "Accessible"]},
-  {n:"91",cat:"Budget",type:"Général",q:"C\'est la fin du mois.",a:"Je passe la commande dans 5 jours, vous serez livré début de mois prochain. Cela vous permet d\'anticiper votre budget.",kw:["15ml", "Format test", "Petit prix", "Mensuel", "Accessible"]},
-  {n:"9",cat:"Cadeau",type:"Général",q:"J\'ai peur de me tromper.",a:"Le parfum est un cadeau d\'émotion. Avec nos prix, vous pouvez offrir un coffret complet (parfum + gel douche) pour le prix d\'un seul en parfumerie.",kw:["Coffret", "Émotion", "Complet", "Sécurité", "Prix malin"]},
-  {n:"20",cat:"Cadeau",type:"Général",q:"Et si la personne n\'aime pas ?",a:"Le prix est si bas que vous pouvez en offrir deux différents. C\'est l\'assurance de faire plaisir sans se ruiner.",kw:["Coffret", "Émotion", "Complet", "Sécurité", "Prix malin"]},
-  {n:"59",cat:"Cadeau",type:"Général",q:"Je ne sais pas si elle préfère le sucré ou le fleuri.",a:"Prenez une valeur sûre : un parfum aux notes de vanille ou de jasmin. Ce sont les senteurs les plus appréciées au monde.",kw:["Coffret", "Émotion", "Complet", "Sécurité", "Prix malin"]},
-  {n:"83",cat:"Cadeau",type:"Général",q:"Je cherche quelque chose pour une collègue.",a:"Un parfum de sac 35ml est le cadeau idéal : utile, élégant et budgétairement très correct pour une attention pro.",kw:["Coffret", "Émotion", "Complet", "Sécurité", "Prix malin"]},
-  {n:"8",cat:"Choix",type:"Général",q:"Il y a trop de références.",a:"Dites-moi ce que vous portez d\'habitude, je vais vous trouver son jumeau olfactif en quelques secondes.",kw:["Jumeau olfactif", "Notes", "Profil", "Guidé", "Personnalisé"]},
-  {n:"53",cat:"Choix",type:"Général",q:"Vous n\'avez pas de nouveautés ?",a:"Si ! Chogan sort des nouveautés presque tous les mois. Voici les trois dernières pépites qui viennent d\'arriver au catalogue.",kw:["Jumeau olfactif", "Notes", "Profil", "Guidé", "Personnalisé"]},
-  {n:"88",cat:"Choix",type:"Général",q:"Je veux un parfum que personne d\'autre n\'a.",a:"Regardez notre gamme \'Luxury\'. Ce sont des fragrances rares, plus travaillées, pour ceux qui cherchent l\'exclusivité.",kw:["Jumeau olfactif", "Notes", "Profil", "Guidé", "Personnalisé"]},
-  {n:"151",cat:"Coiffeur",type:"B2B",q:"Je ne suis pas un vendeur de parfums.",a:"Vous ne vendez pas, vous conseillez. Vaporisez une touche en fin de coupe : l\'émotion olfactive fera 90% du travail pour vous.",kw:["Fin de coupe", "Testeur", "Miroir", "Caisse", "Impulsion"]},
-  {n:"158",cat:"Coiffeur",type:"B2B",q:"Mes employés n\'ont pas le temps d\'en parler.",a:"Laissez juste un flacon testeur près du miroir ou de la caisse. La curiosité des clients fera naître la discussion naturellement.",kw:["Fin de coupe", "Testeur", "Miroir", "Caisse", "Impulsion"]},
-  {n:"173",cat:"Coiffeur",type:"B2B",q:"Mes clients n\'ont pas les moyens.",a:"C\'est justement pour eux ! Ils peuvent s\'offrir un extrait de parfum de haute qualité pour le prix d\'un shampoing pro.",kw:["Fin de coupe", "Testeur", "Miroir", "Caisse", "Impulsion"]},
-  {n:"188",cat:"Coiffeur",type:"B2B",q:"Les clients demandent des échantillons.",a:"Expliquez-leur que la mallette remplace l\'échantillon car elle permet de tester le vrai produit sur place immédiatement.",kw:["Fin de coupe", "Testeur", "Miroir", "Caisse", "Impulsion"]},
-  {n:"201",cat:"Coiffeur",type:"B2B",q:"Mes clients préfèrent les produits de soin que je vends.",a:"Le parfum ne remplace pas vos soins, il les complète. C\'est l\'achat \'plaisir\' final qui couronne l\'expérience en salon.",kw:["Fin de coupe", "Testeur", "Miroir", "Caisse", "Impulsion"]},
-  {n:"235",cat:"Coiffeur",type:"B2B",q:"Mes clients viennent pour se détendre, pas pour acheter.",a:"Sentir un parfum d\'exception fait partie de la détente. C\'est un prolongement du bien-être ressenti pendant la prestation.",kw:["Fin de coupe", "Testeur", "Miroir", "Caisse", "Impulsion"]},
-  {n:"280",cat:"Coiffeur",type:"B2B",q:"Est-ce que ça fonctionne avec les clients de passage ?",a:"C\'est le meilleur levier ! Un client qui ne reviendra que dans 3 mois peut repartir avec un parfum aujourd\'hui. C\'est du CA immédiat.",kw:["Fin de coupe", "Testeur", "Miroir", "Caisse", "Impulsion"]},
-  {n:"14",cat:"Comparaison",type:"Général",q:"Ça ressemble aux parfums de supermarché ?",a:"Pas du tout. Nous utilisons des essences de Grasse de haute qualité. La tenue et le sillage sont dignes des plus grandes maisons.",kw:["Grasse", "Qualité", "Tenue", "Sillage", "Maisons luxe"]},
-  {n:"67",cat:"Comparaison",type:"Général",q:"J\'ai vu moins cher sur internet.",a:"Attention aux sites douteux qui vendent de l\'eau parfumée. Avec moi, vous avez une garantie de provenance et un conseil personnalisé.",kw:["Grasse", "Qualité", "Tenue", "Sillage", "Maisons luxe"]},
-  {n:"93",cat:"Comparaison",type:"Général",q:"C\'est comme les parfums à 5€ au marché ?",a:"Absolument pas. Ceux-là sont pleins d\'eau et d\'alcool de mauvaise qualité. Chogan est un produit professionnel certifié.",kw:["Grasse", "Qualité", "Tenue", "Sillage", "Maisons luxe"]},
-  {n:"11",cat:"Composition",type:"Général",q:"Il y a trop d\'alcool dedans.",a:"L\'alcool est le porteur. Chez nous, il s\'évapore en 30 secondes pour laisser place à 30% d\'huiles pures, sans eau ajoutée.",kw:["Huiles pures", "Sans eau", "30%", "Certifié", "REACH"]},
-  {n:"70",cat:"Composition",type:"Général",q:"Est-ce qu\'il y a du colorant ?",a:"Non, la couleur que vous voyez est celle des huiles essentielles naturelles. Nous n\'ajoutons rien d\'inutile dans nos flacons.",kw:["Huiles pures", "Sans eau", "30%", "Certifié", "REACH"]},
-  {n:"166",cat:"Concept Store",type:"B2B",q:"Le packaging est trop uniforme.",a:"C\'est ce qui permet ce prix incroyable. Cela crée aussi une collection visuelle cohérente et élégante sur une étagère.",kw:["Circuit court", "Histoire", "Prix bas", "Fleur Grasse", "Niche"]},
-  {n:"266",cat:"Concept Store",type:"B2B",q:"Je veux des produits qui racontent une histoire.",a:"Racontez l\'histoire du circuit court : de la fleur de Grasse au flacon italien, sans passer par les panneaux publicitaires de Paris.",kw:["Circuit court", "Histoire", "Prix bas", "Fleur Grasse", "Niche"]},
-  {n:"100",cat:"Conclusion",type:"Général",q:"Bon, je vais réfléchir.",a:"Bien sûr. Gardez ce testeur sur votre poignet. Si demain matin vous le sentez encore et qu\'il vous plaît, rappelez-moi !",kw:["Testeur", "Rappel", "Poignet", "24h", "Signature"]},
-  {n:"200",cat:"Conclusion",type:"Général",q:"C\'est tentant, on commence comment ?",a:"On définit ensemble vos 5 meilleures ventes potentielles et je vous installe la mallette de démonstration dès demain.",kw:["Testeur", "Rappel", "Poignet", "24h", "Signature"]},
-  {n:"250",cat:"Conclusion",type:"Général",q:"C\'est validé, on lance le premier test ?",a:"Parfait ! Je vous installe la mallette et on sélectionne ensemble vos 10 premiers testeurs pour commencer dès aujourd\'hui.",kw:["Testeur", "Rappel", "Poignet", "24h", "Signature"]},
-  {n:"300",cat:"Conclusion",type:"Général",q:"C\'est parti, on signe le partenariat !",a:"Excellent choix. Vous rejoignez un réseau de professionnels qui ont compris que la qualité et le prix peuvent enfin aller de pair.",kw:["Testeur", "Rappel", "Poignet", "24h", "Signature"]},
-  {n:"6",cat:"Confiance",type:"Général",q:"Je ne connais pas la marque.",a:"Nous ne faisons pas de pub TV pour baisser les prix. Notre seule publicité, c\'est votre satisfaction et le bouche-à-oreille.",kw:["Bouche-à-oreille", "Satisfaction", "Traçable", "Italien", "Certifié"]},
-  {n:"12",cat:"Confiance",type:"Général",q:"Je n\'ai jamais entendu parler de Chogan.",a:"C\'est normal, nous ne payons pas de pub TV. Tout repose sur le bouche-à-oreille et la qualité réelle du produit dans le flacon.",kw:["Bouche-à-oreille", "Satisfaction", "Traçable", "Italien", "Certifié"]},
-  {n:"41",cat:"Confiance",type:"Général",q:"Est-ce que les flacons fuient ?",a:"Nos flacons sont dotés de pompes de haute précision et de bouchons sécurisés pour éviter toute perte de votre précieux extrait.",kw:["Bouche-à-oreille", "Satisfaction", "Traçable", "Italien", "Certifié"]},
-  {n:"57",cat:"Confiance",type:"Général",q:"J\'ai peur que ce soit de l\'eau.",a:"Secouez le flacon : vous verrez les micro-bulles d\'huiles essentielles. C\'est la preuve visuelle qu\'il n\'y a pas d\'eau ajoutée.",kw:["Bouche-à-oreille", "Satisfaction", "Traçable", "Italien", "Certifié"]},
-  {n:"75",cat:"Confiance",type:"Général",q:"Je ne connais pas cette marque italienne.",a:"C\'est une entreprise en pleine expansion. Le bouche-à-oreille de nos clients satisfaits est notre seule publicité, ce qui explique nos prix.",kw:["Bouche-à-oreille", "Satisfaction", "Traçable", "Italien", "Certifié"]},
-  {n:"87",cat:"Confiance",type:"Général",q:"Y a-t-il une garantie ?",a:"Ma garantie, c\'est mon suivi. Si vous avez le moindre doute sur l\'utilisation, je suis là pour vous conseiller à tout moment.",kw:["Bouche-à-oreille", "Satisfaction", "Traçable", "Italien", "Certifié"]},
-  {n:"99",cat:"Confiance",type:"Général",q:"Et si je ne reçois pas ma commande ?",a:"Je m\'occupe personnellement du suivi. Vous ne payez qu\'à la livraison si cela vous rassure pour cette première fois.",kw:["Bouche-à-oreille", "Satisfaction", "Traçable", "Italien", "Certifié"]},
-  {n:"35",cat:"Couleur",type:"Général",q:"Le jus est très clair / foncé.",a:"La couleur dépend des fleurs et plantes utilisées dans l\'essence. C\'est la preuve de la naturalité des composants.",kw:["Qualité", "Prix", "Essences", "Certifié", "Grasse"]},
-  {n:"155",cat:"CSE",type:"B2B",q:"C\'est trop lourd à gérer logistiquement.",a:"Je m\'occupe de tout : je centralise les commandes, je livre par service et je gère le SAV. Pour vous, c\'est zéro charge de travail.",kw:["Logistique", "Présentiel", "Bouclier achat", "Alternative", "Humain"]},
-  {n:"179",cat:"CSE",type:"B2B",q:"On préfère les chèques cadeaux.",a:"Un chèque s\'oublie, un parfum dure des mois. Proposez une boutique éphémère Chogan pour une expérience plus humaine.",kw:["Logistique", "Présentiel", "Bouclier achat", "Alternative", "Humain"]},
-  {n:"260",cat:"CSE",type:"B2B",q:"Les salariés préfèrent les marques qu\'ils voient en pub.",a:"Montrez-leur le test de tenue. Quand ils verront que Chogan tient mieux que leur marque habituelle pour 3 fois moins cher, ils changeront d\'avis.",kw:["Logistique", "Présentiel", "Bouclier achat", "Alternative", "Humain"]},
-  {n:"206",cat:"CSE / CE",type:"B2B",q:"On a déjà des partenariats avec de grandes parfumeries.",a:"Chogan offre une alternative économique sans ticket modérateur. Vos salariés gagnent en pouvoir d\'achat réel sur un produit de luxe.",kw:["Logistique", "Présentiel", "Bouclier achat", "Alternative", "Humain"]},
-  {n:"43",cat:"Disponibilité",type:"Général",q:"Il est souvent en rupture.",a:"C\'est la rançon du succès ! Je peux le pré-commander pour vous afin que vous soyez prioritaire dès le prochain arrivage.",kw:["Pré-commande", "Prioritaire", "Arrivage", "Stock", "Succès"]},
-  {n:"17",cat:"Échantillons",type:"Général",q:"Je veux un échantillon gratuit d\'abord.",a:"Le format 15ml est conçu pour cela. C\'est un test grandeur nature qui vous permet de vivre avec le parfum pendant plusieurs jours.",kw:["Qualité", "Prix", "Essences", "Certifié", "Grasse"]},
-  {n:"73",cat:"Échantillons",type:"Général",q:"Vous n\'avez pas de testeurs papier ?",a:"Le papier trahit l\'odeur. Je préfère vous faire tester directement sur la peau ou sur un ruban de tissu pour une vraie expérience.",kw:["Qualité", "Prix", "Essences", "Certifié", "Grasse"]},
-  {n:"65",cat:"Écologie",type:"Général",q:"Est-ce que le flacon est recyclable ?",a:"Oui, le verre est recyclable. Chogan encourage une consommation responsable en évitant les sur-emballages inutiles.",kw:["Qualité", "Prix", "Essences", "Certifié", "Grasse"]},
-  {n:"10",cat:"Économie",type:"Général",q:"J\'attends les soldes.",a:"Nous sommes en prix direct usine toute l\'année. Nos prix sont déjà inférieurs à n\'importe quelle solde de grande enseigne.",kw:["Prix usine", "Toute année", "Direct", "Soldes battues", "Imbattable"]},
-  {n:"40",cat:"Économie",type:"Général",q:"Je préfère les promos de chez Sephora.",a:"Même à -30%, leurs parfums restent deux fois plus chers que nos prix fixes toute l\'année. Calculez la différence !",kw:["Prix usine", "Toute année", "Direct", "Soldes battues", "Imbattable"]},
-  {n:"82",cat:"Emploi",type:"Général",q:"C\'est pour les jeunes votre truc.",a:"Pas du tout, nous avons des fragrances classiques et intemporelles qui plaisent énormément à une clientèle mature et exigeante.",kw:["Qualité", "Prix", "Essences", "Certifié", "Grasse"]},
-  {n:"156",cat:"Esthétique",type:"B2B",q:"Mes clients sont fidèles aux grandes marques.",a:"Proposez Chogan comme le \'parfum de sac\' ou de voyage. Ils gardent leur flacon cher pour les fêtes et utilisent Chogan au quotidien.",kw:["Comptoir", "Soin", "Complémentaire", "Universel", "Plaisir"]},
-  {n:"171",cat:"Esthétique",type:"B2B",q:"Le catalogue est trop épais.",a:"Je vous ai préparé une sélection des 10 meilleures ventes. C\'est tout ce dont vous avez besoin pour démarrer fort.",kw:["Comptoir", "Soin", "Complémentaire", "Universel", "Plaisir"]},
-  {n:"111",cat:"B2C - Alcool",type:"B2C",q:"L\'alcool abîme les cheveux.",a:"Vaporisez sur votre brosse à cheveux avant de vous coiffer pour parfumer sans contact direct.",kw:["Transporteur", "30 sec", "Évaporation", "Essences", "Naturel"]},
-  {n:"182",cat:"Esthétique",type:"B2B",q:"J\'ai peur que l\'odeur soit trop forte dans le salon.",a:"Nos flacons sont parfaitement hermétiques. Il n\'y a aucune odeur parasite tant que vous ne faites pas de test.",kw:["Comptoir", "Soin", "Complémentaire", "Universel", "Plaisir"]},
-  {n:"204",cat:"Esthétique",type:"B2B",q:"Je n\'ai pas le temps de faire des tests sur chaque cliente.",a:"Laissez une touche parfumée sur le poignet en fin de soin. Le parfum travaillera tout seul pendant que la cliente règle sa prestation.",kw:["Comptoir", "Soin", "Complémentaire", "Universel", "Plaisir"]},
-  {n:"213",cat:"Esthétique",type:"B2B",q:"J\'ai déjà trop de produits à proposer en caisse.",a:"Le parfum est universel. Contrairement à une crème spécifique, tout le monde utilise du parfum. C\'est votre produit le plus facile à vendre.",kw:["Comptoir", "Soin", "Complémentaire", "Universel", "Plaisir"]},
-  {n:"229",cat:"Esthétique",type:"B2B",q:"Mes clientes sont très pointilleuses sur le Bio.",a:"Chogan possède des gammes certifiées Bio et naturelles. Nous avons des solutions pour toutes les exigences éthiques.",kw:["Comptoir", "Soin", "Complémentaire", "Universel", "Plaisir"]},
-  {n:"241",cat:"Esthétique",type:"B2B",q:"On m\'a dit que les parfums tournaient vite.",a:"Faux pour les extraits à 30%. La concentration protège la fragrance. Elle se garde plus longtemps qu\'une eau de toilette.",kw:["Comptoir", "Soin", "Complémentaire", "Universel", "Plaisir"]},
-  {n:"262",cat:"Esthétique",type:"B2B",q:"Je préfère les produits sans alcool.",a:"L\'alcool est indispensable pour la diffusion. Le nôtre est de haute qualité et s\'évapore sans agresser la peau ni le nez.",kw:["Comptoir", "Soin", "Complémentaire", "Universel", "Plaisir"]},
-  {n:"278",cat:"Esthétique",type:"B2B",q:"Je veux des produits respectueux de l\'environnement.",a:"Chogan réduit les emballages secondaires et utilise des flacons recyclables. C\'est une démarche plus sobre que le luxe traditionnel.",kw:["Comptoir", "Soin", "Complémentaire", "Universel", "Plaisir"]},
-  {n:"31",cat:"Éthique",type:"Général",q:"Est-ce testé sur les animaux ?",a:"Non, Chogan respecte les normes européennes qui interdisent strictement les tests sur les animaux pour les cosmétiques.",kw:["Non testé", "Normes UE", "Vegan", "Naturel", "Responsable"]},
-  {n:"39",cat:"Exclusivité",type:"Général",q:"On ne le trouve pas en parfumerie ?",a:"Non, et c\'est ce qui fait son prix. Vous faites partie d\'un cercle d\'initiés qui ont compris comment acheter intelligemment.",kw:["Circuit fermé", "Initiés", "Rare", "Non distribué", "Précieux"]},
-  {n:"36",cat:"Famille",type:"Général",q:"Est-ce que vous avez des parfums enfants ?",a:"Oui, nous avons une gamme spécifique, plus douce et adaptée aux peaux fragiles des plus jeunes.",kw:["Gamme enfants", "Doux", "Adapté", "Sécurisé", "Sans alcool"]},
-  {n:"97",cat:"Famille",type:"Général",q:"On peut en mettre aux bébés ?",a:"Pour les tout-petits, nous conseillons uniquement nos produits de soin spécifiques sans alcool. La peau des bébés est trop fragile.",kw:["Gamme enfants", "Doux", "Adapté", "Sécurisé", "Sans alcool"]},
-  {n:"71",cat:"Fidélité",type:"Général",q:"Ma marque préférée n\'est pas dans votre liste.",a:"Donnez-moi les notes olfactives (ex: boisées, ambrées). Je vais vous trouver une fragrance Chogan qui vous plaira tout autant.",kw:["Alterner", "Découverte", "Garde-robe", "Nez habitué", "Saisons"]},
-  {n:"161",cat:"Fitness",type:"B2B",q:"Ce n\'est pas le lieu pour vendre du parfum.",a:"Après une séance, vos clients veulent se sentir frais. C\'est l\'achat d\'impulsion parfait pour compléter leur routine bien-être.",kw:["Sac", "Après séance", "Frais", "Bien-être", "Impulsion"]},
-  {n:"211",cat:"Fitness",type:"B2B",q:"Les gens viennent pour suer, pas pour sentir bon.",a:"Justement ! Le parfum de sac est l\'accessoire indispensable pour repartir du club en se sentant frais et élégant.",kw:["Sac", "Après séance", "Frais", "Bien-être", "Impulsion"]},
-  {n:"16",cat:"Flacon",type:"Général",q:"Le design du flacon est trop simple.",a:"Le luxe est à l\'intérieur. En uniformisant nos flacons, nous investissons tout votre argent dans l\'essence, pas dans le verre.",kw:["Luxe intérieur", "Essence pure", "Sobre", "Recyclable", "Design"]},
-  {n:"2",cat:"Format",type:"Général",q:"Le 15ml est cher au litre.",a:"C\'est le format test. Il vous permet de valider la tenue sur votre peau pendant une semaine avant de passer au grand format sans risque.",kw:["35ml", "15ml", "Voyage", "Rechargeable", "Nomade"]},
-  {n:"55",cat:"Genre",type:"Général",q:"Je cherche un parfum pour mon mari qui n\'aime pas se parfumer.",a:"Offrez-lui un gel douche parfumé. C\'est discret, ça sent bon sous la douche et l\'odeur reste légère sur la peau toute la journée.",kw:["Unisexe", "Boisé", "Cuiré", "Masculin", "Sans genre"]},
-  {n:"153",cat:"Gérant",type:"B2B",q:"La marge n\'est pas assez intéressante.",a:"C\'est un produit de volume. La vente prend 30 secondes en caisse et augmente votre panier moyen sans mobiliser de temps technique.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"159",cat:"Gérant",type:"B2B",q:"On me propose déjà des génériques.",a:"Chogan n\'est pas un générique dilué. C\'est un extrait à 30%. La tenue est supérieure, ce qui garantit que le client reviendra chez vous.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"164",cat:"Gérant",type:"B2B",q:"Et si le client trouve le même sur internet ?",a:"Il l\'achètera chez vous pour votre conseil et la possibilité de le sentir immédiatement. Le service de proximité bat toujours le web.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"170",cat:"Gérant",type:"B2B",q:"Comment justifier la provenance ?",a:"C\'est simple : Essences de Grasse (France) et mise en flacon en Italie. C\'est le meilleur du savoir-faire européen.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"175",cat:"Gérant",type:"B2B",q:"Je veux tester avant de proposer.",a:"C\'est tout à fait normal. Je vous offre une démonstration gratuite sur vos collaborateurs pour que vous constatiez la tenue.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"181",cat:"Gérant",type:"B2B",q:"Est-ce que ça va cannibaliser mes autres ventes ?",a:"Non, c\'est un budget \'plaisir\' différent du budget \'soin\'. Les deux s\'additionnent sur votre ticket de caisse.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"184",cat:"Gérant",type:"B2B",q:"Je veux une exclusivité de quartier.",a:"Votre exclusivité, c\'est votre base clients. Personne ne peut leur offrir votre conseil et votre proximité.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"189",cat:"Gérant",type:"B2B",q:"Je ne veux pas faire de \'marchandage\'.",a:"Il n\'y a pas de marchandage. Les prix sont fixes, transparents et affichés. C\'est une vente propre et professionnelle.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"193",cat:"Gérant",type:"B2B",q:"Je n\'ai pas de logiciel pour ça.",a:"L\'ajout d\'une ligne \'Parfum\' dans votre caisse suffit. Je peux vous fournir les codes barres si nécessaire.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"197",cat:"Gérant",type:"B2B",q:"Est-ce que je peux commander un seul flacon ?",a:"Oui, il n\'y a pas de minimum de commande prohibitif. Vous pouvez commencer petit et monter en puissance.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"203",cat:"Gérant",type:"B2B",q:"Je ne veux pas d\'un présentoir qui fait \'marché\'.",a:"Le design Chogan est épuré (noir/or). Il s\'intègre parfaitement dans une décoration moderne et minimaliste sans dénaturer votre standing.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"210",cat:"Gérant",type:"B2B",q:"Est-ce que je peux personnaliser les flacons ?",a:"Le flacon standard garantit le prix bas. En revanche, vous pouvez ajouter votre propre ruban ou sac cadeau pour marquer votre identité.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"215",cat:"Gérant",type:"B2B",q:"Je ne veux pas m\'occuper du SAV.",a:"Je suis votre partenaire dédié. S\'il y a un défaut technique, je gère le remplacement. Vous gardez l\'esprit libre pour votre métier.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"221",cat:"Gérant",type:"B2B",q:"L\'image de marque italienne est-elle un plus ?",a:"Absolument. L\'Italie est synonyme de luxe et de design. C\'est un gage de qualité très apprécié par les consommateurs français.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"227",cat:"Gérant",type:"B2B",q:"Est-ce que je peux faire des promotions ?",a:"Le prix est conseillé, mais vous êtes libre de créer des \'offres packages\' : une prestation achetée = un parfum à -20%.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"233",cat:"Gérant",type:"B2B",q:"Est-ce que je peux avoir des factures pro ?",a:"Oui, vous avez accès à votre espace pro avec factures téléchargeables pour votre comptabilité et récupération de TVA.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"239",cat:"Gérant",type:"B2B",q:"Les gens achètent leur parfum une fois par an.",a:"À ce prix-là, ils en achètent un par saison ! C\'est la fin du parfum unique, bienvenue dans la garde-robe olfactive.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"246",cat:"Gérant",type:"B2B",q:"Je veux tester la livraison avant de m\'engager.",a:"C\'est possible. Faites une petite commande \'test\' aujourd\'hui, vous verrez la rapidité et le soin apporté au colis.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"251",cat:"Gérant",type:"B2B",q:"Je ne veux pas que mes employés passent leur temps à ça.",a:"La vente de parfum est un automatisme de caisse. C\'est un complément qui prend 30 secondes et valorise le travail de l\'équipe.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"256",cat:"Gérant",type:"B2B",q:"Je veux une exclusivité sur ma ville.",a:"Votre force, c\'est votre fichier client. Personne d\'autre ne peut conseiller vos clients avec la même confiance que vous.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"264",cat:"Gérant",type:"B2B",q:"J\'ai peur que mes clients pensent que je délaisse mon métier.",a:"C\'est l\'inverse : vous enrichissez votre métier en proposant une solution globale de beauté et de bien-être à vos clients.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"270",cat:"Gérant",type:"B2B",q:"Je veux voir les certifications.",a:"Toutes les fiches de sécurité (FDS) et certifications sont disponibles sur votre espace pro. Nous jouons la carte de la transparence.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"276",cat:"Gérant",type:"B2B",q:"Je ne veux pas de minimum de commande mensuel.",a:"Il n\'y en a pas. Vous commandez quand vous en avez besoin. Vous restez maître de votre trésorerie à 100%.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"284",cat:"Gérant",type:"B2B",q:"Comment justifier le prix face à la famille/amis ?",a:"Dites-leur que vous avez trouvé le bon plan ultime pour avoir la qualité de Grasse sans payer le marketing. Ils vous en demanderont aussi !",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"288",cat:"Gérant",type:"B2B",q:"Comment expliquer la numérotation des flacons ?",a:"C\'est une approche moderne, comme dans les parfumeries de niche. On choisit une odeur, pas un nom marketing.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"293",cat:"Gérant",type:"B2B",q:"Je ne veux pas d\'un présentoir qui prend la poussière.",a:"La mallette est dynamique. On l\'ouvre, on la ferme, on la déplace. Elle vit avec votre salon, elle n\'est jamais figée.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"297",cat:"Gérant",type:"B2B",q:"Je veux un produit qui fidélise.",a:"Le parfum est le produit de fidélisation par excellence. Une fois qu\'une cliente a trouvé \'son\' numéro Chogan, elle reviendra chez vous pour le racheter.",kw:["Circuit court", "Marge", "Mallette", "SAV", "Partenariat"]},
-  {n:"176",cat:"Hôtel",type:"B2B",q:"On a déjà des produits d\'accueil.",a:"Nos parfums d\'ambiance et extraits de linge offrent une signature olfactive mémorable qui améliore vos avis clients.",kw:["Signature olfactive", "Ambiance", "Linge", "Avis", "Mémorable"]},
-  {n:"32",cat:"Identité",type:"Général",q:"Je ne veux pas porter comme tout le monde.",a:"Chogan propose des centaines de références. Nous trouverons ensemble une fragrance rare qui correspond à votre personnalité.",kw:["Signature", "PH peau", "Unique", "Personnel", "Exclusif"]},
-  {n:"94",cat:"Identité",type:"Général",q:"Je ne veux pas qu\'on sache que c\'est du Chogan.",a:"Personne ne le saura ! On vous demandera juste quel est ce parfum merveilleux que vous portez.",kw:["Signature", "PH peau", "Unique", "Personnel", "Exclusif"]},
-  {n:"46",cat:"Ingrédients",type:"Général",q:"Y a-t-il des parabènes ?",a:"Chogan s\'efforce d\'éliminer les substances controversées pour proposer des produits plus sains que la parfumerie standard.",kw:["Huiles essentielles", "INCI", "Parabènes", "Naturel", "Tracé"]},
-  {n:"92",cat:"Ingrédients",type:"Général",q:"Y a-t-il des fixateurs synthétiques ?",a:"Nous en utilisons le moins possible. La tenue vient de la qualité des huiles et de la concentration à 30%, pas de la chimie.",kw:["Huiles essentielles", "INCI", "Parabènes", "Naturel", "Tracé"]},
-  {n:"152",cat:"Institut",type:"B2B",q:"Je n\'ai pas de place pour un présentoir.",a:"La mallette Chogan est ultra-compacte. Elle contient 120 testeurs et se range dans un tiroir. C\'est une parfumerie complète de poche.",kw:["Mallette", "Compacte", "Tiroir", "Cabine", "Hermétique"]},
-  {n:"163",cat:"Institut",type:"B2B",q:"Je préfère vendre mes propres soins.",a:"Le parfum est complémentaire. Une cliente qui vient pour un soin visage repartira plus facilement avec un parfum qu\'avec une deuxième crème.",kw:["Mallette", "Compacte", "Tiroir", "Cabine", "Hermétique"]},
-  {n:"252",cat:"Institut",type:"B2B",q:"J\'ai peur que l\'odeur perturbe mes soins cabine.",a:"Nos flacons sont ultra-hermétiques. Aucune odeur ne filtre tant que vous ne décidez pas de faire un test en zone d\'accueil.",kw:["Mallette", "Compacte", "Tiroir", "Cabine", "Hermétique"]},
-  {n:"42",cat:"Intensité",type:"Général",q:"L\'odeur change après une heure.",a:"C\'est la magie de la pyramide olfactive. Le parfum évolue, dévoilant son cœur puis son fond. C\'est signe de grande qualité.",kw:["Extrait pur", "Pyramide", "Évolution", "Cœur", "Fond"]},
-  {n:"66",cat:"Intensité",type:"Général",q:"Le parfum me donne mal à la tête.",a:"C\'est souvent dû aux fixateurs chimiques des grandes marques. Nos extraits sont plus naturels, essayez-en une seule touche sur les chevilles.",kw:["Extrait pur", "Pyramide", "Évolution", "Cœur", "Fond"]},
-  {n:"5",cat:"Légalité",type:"Général",q:"C\'est de la copie ?",a:"Non, c\'est une inspiration légale. Nous achetons les essences chez Fragworld, le même fournisseur que les grandes marques.",kw:["Inspiration", "Fragworld", "Légal", "Certifié", "Traçable"]},
-  {n:"15",cat:"Livraisons",type:"Général",q:"C\'est long d\'attendre la commande.",a:"L\'attente garantit que vous recevez un produit frais, sortant d\'usine. C\'est le gage d\'une conservation et d\'une puissance optimales.",kw:["Frais", "Usine", "Qualité", "Conservation", "Puissance"]},
-  {n:"44",cat:"Luxe",type:"Général",q:"Le luxe c\'est aussi le sac en papier.",a:"Je peux vous préparer un bel emballage cadeau personnalisé. Le vrai luxe, c\'est le service et le conseil que je vous offre.",kw:["Contenu premium", "Qualité égale", "Pas de décor", "Jus pur", "Accessible"]},
-  {n:"77",cat:"Luxe",type:"Général",q:"Si c\'est pas cher, c\'est que c\'est du bas de gamme.",a:"Au restaurant, vous payez le décor. Ici, vous ne payez que le plat. La qualité du \'jus\' est identique aux grandes maisons.",kw:["Contenu premium", "Qualité égale", "Pas de décor", "Jus pur", "Accessible"]},
-  {n:"98",cat:"Luxe",type:"Général",q:"Je n\'ai pas l\'habitude du luxe.",a:"Le luxe ne devrait pas être réservé à une élite. Chogan démocratise la haute parfumerie pour tout le monde.",kw:["Contenu premium", "Qualité égale", "Pas de décor", "Jus pur", "Accessible"]},
-  {n:"22",cat:"Marques",type:"Général",q:"Je préfère avoir le vrai flacon sur ma commode.",a:"Beaucoup de clients gardent le beau flacon vide pour la déco et utilisent Chogan pour se parfumer réellement au quotidien.",kw:["Flacon déco", "Usage quotidien", "Malin", "Complémentaire", "Astuce"]},
-  {n:"21",cat:"Naturel",type:"Général",q:"Est-ce que c\'est bio ?",a:"Nos parfums ne sont pas certifiés bio, mais nous minimisons les fixateurs chimiques agressifs au profit d\'essences naturelles.",kw:["Essences", "Minimaliste", "Fixateurs", "Naturel", "Certifié"]},
-  {n:"49",cat:"Nouveauté",type:"Général",q:"J\'ai peur de me lasser.",a:"Prenez deux flacons de 35ml au lieu d\'un de 100ml. Vous pourrez alterner selon votre humeur ou la météo.",kw:["Plusieurs flacons", "Alterner", "Humeur", "Météo", "Garde-robe"]},
-  {n:"45",cat:"Odeur",type:"Général",q:"Ça sent un peu différemment de l\'original.",a:"Le parfum réagit à votre PH de peau. Sur vous, il sera unique. C\'est ce qui fera votre propre signature.",kw:["PH", "Réaction peau", "Unique", "Vivant", "Personnalisé"]},
-  {n:"52",cat:"Odeur",type:"Général",q:"C\'est trop fort pour moi.",a:"C\'est parce que c\'est un extrait pur. Essayez d\'en mettre moins, ou de vaporiser un nuage devant vous et de marcher dedans.",kw:["PH", "Réaction peau", "Unique", "Vivant", "Personnalisé"]},
-  {n:"78",cat:"Odeur",type:"Général",q:"L\'odeur ne ressemble pas à mon souvenir.",a:"Les marques reformulent souvent leurs parfums. Chogan reste fidèle aux essences originelles de haute qualité.",kw:["PH", "Réaction peau", "Unique", "Vivant", "Personnalisé"]},
-  {n:"4",cat:"Origine",type:"Général",q:"Je préfère les magasins.",a:"En magasin, vous payez 80% de marketing. Chez Chogan, vous payez 100% de jus provenant directement de Grasse.",kw:["Grasse", "Italie", "Circuit court", "Européen", "Traçable"]},
-  {n:"19",cat:"Origine",type:"Général",q:"C\'est vraiment fabriqué en Italie ?",a:"Oui, toute la production est centralisée en Italie selon des normes européennes strictes, avec des essences venant de Grasse.",kw:["Grasse", "Italie", "Circuit court", "Européen", "Traçable"]},
-  {n:"61",cat:"Packaging",type:"Général",q:"La boîte est trop simple pour un cadeau.",a:"C\'est vrai, l\'emballage est minimaliste pour protéger l\'environnement et votre portefeuille. Je peux vous proposer un joli sac cadeau en option.",kw:["Minimaliste", "Éco", "Cadeau", "Sac", "Emballage"]},
-  {n:"1",cat:"Prix",type:"Général",q:"C\'est trop cher pour moi.",a:"Je comprends, mais c\'est un extrait à 30%. Un flacon de 100ml dure 4 mois : c\'est moins de 25 cts par jour pour l\'excellence italienne.",kw:["25 cts/jour", "4 mois", "30%", "Extrait", "Économie"]},
-  {n:"28",cat:"Prix",type:"Général",q:"Pourquoi le prix est le même pour tous ?",a:"C\'est la force de Chogan : une tarification simplifiée basée sur la concentration (Extrait) et non sur le marketing de la marque.",kw:["25 cts/jour", "4 mois", "30%", "Extrait", "Économie"]},
-  {n:"60",cat:"Prix",type:"Général",q:"Je trouve quand même ça cher pour du \'générique\'.",a:"Ce n\'est pas du générique, c\'est un contrat direct avec le fabricant d\'essence. Vous payez le produit brut au prix juste.",kw:["25 cts/jour", "4 mois", "30%", "Extrait", "Économie"]},
-  {n:"86",cat:"Prix",type:"Général",q:"Je préfère attendre mon anniversaire.",a:"Pourquoi attendre ? À ce prix, vous pouvez vous faire plaisir aujourd\'hui sans culpabiliser pour votre budget.",kw:["25 cts/jour", "4 mois", "30%", "Extrait", "Économie"]},
-  {n:"157",cat:"Pro",type:"B2B",q:"J\'ai peur de me retrouver avec du stock dormant.",a:"Il n\'y a pas d\'obligation de stock. Vous commandez uniquement ce que vos clients ont déjà testé et choisi via la mallette.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"160",cat:"Pro",type:"B2B",q:"C\'est légal de revendre ça en salon ?",a:"Absolument. Vous recevez une facture avec TVA et vous revendez un produit certifié aux normes européennes en toute transparence.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"162",cat:"Pro",type:"B2B",q:"Le prix est trop bas, les clients vont douter.",a:"Expliquez-leur le concept : pas de pub, pas d\'égérie, pas d\'intermédiaire. Ils paient le parfum, pas le marketing de luxe.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"165",cat:"Pro",type:"B2B",q:"Je ne veux pas d\'un engagement longue durée.",a:"Il n\'y en a pas. Vous travaillez à votre rythme. Chogan est un partenaire flexible qui s\'adapte à la taille de votre entreprise.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"167",cat:"Pro",type:"B2B",q:"Je n\'ai pas de trésorerie pour démarrer.",a:"Commencez par prendre les commandes sur catalogue et encaissez vos clients avant de valider. Vous n\'avancez aucun frais.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"169",cat:"Pro",type:"B2B",q:"Est-ce que je peux faire mes propres coffrets ?",a:"Bien sûr ! Associez un parfum Chogan avec vos prestations (ex: forfait coupe + parfum) pour créer des offres irrésistibles.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"172",cat:"Pro",type:"B2B",q:"Je ne veux pas gérer les retours.",a:"Je suis votre interlocuteur unique. En cas de souci technique sur un flacon, je m\'occupe de l\'échange standard immédiatement.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"174",cat:"Pro",type:"B2B",q:"Je n\'aime pas le système de vente directe.",a:"Voyez-le comme un circuit court. Entre l\'usine et votre salon, il n\'y a que moi. Moins d\'intermédiaires = plus de profit pour vous.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"177",cat:"Pro",type:"B2B",q:"Je ne sais pas comment introduire le sujet.",a:"Demandez simplement : \'Quel type de parfum aimez-vous porter ?\' La réponse vous donne l\'ouverture pour montrer un testeur.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"180",cat:"Pro",type:"B2B",q:"Les délais de livraison sont-ils garantis ?",a:"Les commandes sont traitées sous 48h. Votre client n\'attendra jamais plus d\'une semaine pour recevoir son précieux flacon.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"183",cat:"Pro",type:"B2B",q:"Je n\'ai pas le temps de former mon équipe.",a:"La formation dure 15 minutes. Je leur montre comment utiliser la mallette et identifier les équivalences rapidement.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"185",cat:"Pro",type:"B2B",q:"La qualité est-elle constante ?",a:"Oui, Chogan suit des protocoles de fabrication industriels stricts. Chaque lot est contrôlé pour garantir la même intensité.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"187",cat:"Pro",type:"B2B",q:"Je préfère les marques françaises.",a:"Les essences viennent de Grasse ! C\'est le cœur du parfum français avec une efficacité logistique italienne.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"190",cat:"Pro",type:"B2B",q:"Comment gérer les testeurs vides ?",a:"Je m\'occupe du réassort de vos testeurs. Vous avez toujours une mallette opérationnelle pour ne rater aucune vente.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"192",cat:"Pro",type:"B2B",q:"Le catalogue change trop souvent.",a:"C\'est un avantage ! Cela vous donne une excuse pour recontacter vos clients et leur proposer des nouveautés fraîches.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"194",cat:"Pro",type:"B2B",q:"Les flacons ne sont pas assez luxueux.",a:"L\'élégance est dans la sobriété. Le luxe aujourd\'hui, c\'est le contenu et le prix intelligent, pas le flacon chargé de dorures.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"196",cat:"Pro",type:"B2B",q:"Je veux une PLV (publicité sur lieu de vente).",a:"Je peux vous fournir des supports visuels élégants et des fiches d\'équivalences pour aider vos clients à choisir seuls.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"198",cat:"Pro",type:"B2B",q:"Les clients ont peur des allergies.",a:"Tous nos produits sont aux normes IFRA. En cas de doute, la cliente peut tester sur une touche de coton avant l\'achat.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"202",cat:"Pro",type:"B2B",q:"Le prix public est trop bas pour ma clientèle aisée.",a:"Présentez-le comme une \'découverte exclusive\'. Le prix bas devient alors un avantage compétitif irrésistible, même pour les budgets élevés.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"205",cat:"Pro",type:"B2B",q:"Comment savoir quels numéros commander ?",a:"Je vous fournis la liste des 10 \'Best-Sellers\'. Ce sont des valeurs sûres qui plaisent à 90% des clients dès la première senteur.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"207",cat:"Pro",type:"B2B",q:"J\'ai peur de la contrefaçon.",a:"Chogan est une marque déposée. Nous achetons légalement nos essences chez Fragworld. Tout est traçable, certifié et conforme aux lois européennes.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"209",cat:"Pro",type:"B2B",q:"Le délai de livraison est-il fiable ?",a:"Les commandes sont expédiées sous 48h-72h. Je vous envoie le numéro de suivi pour que vous puissiez rassurer vos clients.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"212",cat:"Pro",type:"B2B",q:"Je n\'aime pas le système de vente par catalogue.",a:"Considérez-le comme une extension de votre stock. Vous proposez 300 références sans avoir à les acheter à l\'avance.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"214",cat:"Pro",type:"B2B",q:"Les clients demandent des échantillons gratuits.",a:"Dites-leur : \'Je n\'ai pas d\'échantillons jetables, j\'ai mieux : ma mallette de testeurs pour que vous essayiez le vrai produit immédiatement\'.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"216",cat:"Pro",type:"B2B",q:"Est-ce que l\'odeur tient vraiment 8 heures ?",a:"C\'est un extrait de parfum à 30%. La tenue est souvent supérieure aux eaux de parfum classiques. Testez-le sur vous aujourd\'hui.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"218",cat:"Pro",type:"B2B",q:"Comment justifier la différence de prix avec Sephora ?",a:"Pas d\'égéries à 10 millions, pas de pub TV, pas d\'intermédiaires. Le client paie le parfum, pas le marketing.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"220",cat:"Pro",type:"B2B",q:"Et si je veux arrêter le partenariat ?",a:"Il n\'y a aucun contrat de durée. Vous êtes libre. Mais avec les retours clients positifs, vous aurez plutôt envie de commander plus !",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"222",cat:"Pro",type:"B2B",q:"Les ingrédients sont-ils affichés ?",a:"Oui, chaque flacon possède sa liste INCI complète au dos de la boîte. Transparence totale pour vous et vos clients.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"224",cat:"Pro",type:"B2B",q:"Peut-on commander des petits formats ?",a:"Oui, les 35ml sont parfaits pour les petits budgets ou les cadeaux de fin d\'année. C\'est un format très dynamique en salon.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"226",cat:"Pro",type:"B2B",q:"Je n\'ai pas de vitrine pour exposer.",a:"Le parfum est un produit de comptoir. C\'est au moment du paiement que la vente se déclenche, pas forcément en vitrine.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"228",cat:"Pro",type:"B2B",q:"Comment gérer les clients qui comparent les prix ?",a:"Montrez-leur le tableau des prix Chogan. La transparence sur l\'absence de frais marketing justifie immédiatement l\'économie réalisée.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"230",cat:"Pro",type:"B2B",q:"Je ne veux pas d\'une marque trop \'grand public\'.",a:"Chogan est une marque de niche accessible. Elle n\'est pas vendue partout, ce qui vous donne un avantage d\'exclusivité locale.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"232",cat:"Pro",type:"B2B",q:"Y a-t-il un minimum de commande ?",a:"Non, vous pouvez commander un seul flacon pour tester la réactivité. Mais pour optimiser vos frais de port, je conseille de grouper.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"234",cat:"Pro",type:"B2B",q:"Le catalogue est trop varié, c\'est déroutant.",a:"C\'est une force. Cela veut dire que vous avez une solution pour TOUS vos clients, quels que soient leurs goûts.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"236",cat:"Pro",type:"B2B",q:"Comment fidéliser les clients avec Chogan ?",a:"Proposez une carte de fidélité : 5 parfums achetés = le 6ème offert (ou une réduction). C\'est très efficace.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"238",cat:"Pro",type:"B2B",q:"Est-ce que vous faites des coffrets cadeaux ?",a:"Oui, il existe des boîtes élégantes prêtes à offrir. C\'est un gain de temps énorme pour vos clients pressés.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"240",cat:"Pro",type:"B2B",q:"Comment réagir si un client n\'aime pas ?",a:"Grâce à la mallette, il teste AVANT d\'acheter. Le risque d\'insatisfaction est quasiment nul.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"242",cat:"Pro",type:"B2B",q:"Est-ce que je peux vendre sur mes réseaux sociaux ?",a:"Bien sûr ! Faites des vidéos \'Unboxing\' ou des tests en direct. C\'est un excellent levier pour attirer de nouveaux clients en boutique.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"243",cat:"Pro",type:"B2B",q:"Je ne veux pas d\'une marque qui fait du MLM.",a:"Voyez Chogan comme un grossiste. Vous achetez à prix pro, vous revendez à prix public. C\'est du commerce traditionnel pur.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"245",cat:"Pro",type:"B2B",q:"Comment expliquer les numéros ?",a:"C\'est un code interne pour la logistique. Derrière chaque numéro se cache une émotion olfactive précise que je vous aide à identifier.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"247",cat:"Pro",type:"B2B",q:"Est-ce que je peux avoir des affiches ?",a:"Je peux vous fournir des visuels haute définition à imprimer ou à diffuser sur vos écrans en salon.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"249",cat:"Pro",type:"B2B",q:"Le parfum est-il un produit de luxe ?",a:"Chogan rend le luxe accessible. C\'est le \'Luxe Démocratique\' : la même exigence de qualité sans le prix prohibitif.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"253",cat:"Pro",type:"B2B",q:"Est-ce que je peux être livré sur mon lieu de vacances ?",a:"Oui, Chogan livre partout en Europe. Votre business vous suit, que vous soyez au salon ou en déplacement.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"255",cat:"Pro",type:"B2B",q:"Comment justifier le \'Made in Italy\' pour du parfum ?",a:"L\'Italie est le berceau du design et du luxe. Allié aux essences de Grasse, c\'est le combo parfait pour rassurer vos clients exigeants.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"257",cat:"Pro",type:"B2B",q:"Les prix changent-ils souvent ?",a:"Non, Chogan stabilise ses prix pour permettre aux pros de prévoir leurs marges sereinement sur toute l\'année.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"259",cat:"Pro",type:"B2B",q:"Est-ce que je peux revendre sur mon site web ?",a:"Oui, tant que vous respectez l\'image de marque. C\'est un excellent levier pour générer du chiffre d\'affaires additionnel la nuit.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"261",cat:"Pro",type:"B2B",q:"Comment gérer les clients qui demandent une remise ?",a:"Le prix est déjà \'prix usine\'. Expliquez que la remise est déjà incluse dans le prix final grâce à l\'absence de marketing.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"263",cat:"Pro",type:"B2B",q:"Est-ce que je peux commander via une application ?",a:"Oui, l\'application Chogan est intuitive. Vous passez vos commandes pro en 3 clics depuis votre smartphone entre deux clients.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"265",cat:"Pro",type:"B2B",q:"Est-ce que les flacons sont incassables ?",a:"Le verre est épais et robuste, conçu pour supporter les manipulations quotidiennes en salon et le transport en sac à main.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"267",cat:"Pro",type:"B2B",q:"Je n\'ai pas de terminal de paiement CB.",a:"Utilisez le paiement par QR code ou Lydia. C\'est moderne, rapide et ça sécurise la transaction immédiatement.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"269",cat:"Pro",type:"B2B",q:"Comment savoir si c\'est une vraie commande ou un curieux ?",a:"La mallette filtre les curieux. Celui qui prend le temps de tester 3 fragrances est un acheteur sérieux à 90%.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"271",cat:"Pro",type:"B2B",q:"Les flacons de 100ml sont trop grands pour mes étagères.",a:"Utilisez les 35ml pour l\'exposition. Ils sont fins, élégants et permettent de présenter une large gamme sur un petit espace.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"273",cat:"Pro",type:"B2B",q:"Quelles sont les conditions de retour ?",a:"En cas de défaut de spray ou de casse à la livraison, l\'échange est immédiat. Je m\'occupe de la procédure pour vous.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"275",cat:"Pro",type:"B2B",q:"Est-ce que je peux faire des ventes privées ?",a:"Oui ! Organisez une soirée \'Afterwork\' dans votre salon. C\'est le moment idéal pour faire tester toute la mallette en toute convivialité.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"277",cat:"Pro",type:"B2B",q:"Le packaging est-il le même pour tous ?",a:"Oui, et c\'est notre force. Cela évite la discrimination par le prix visuel et met l\'accent uniquement sur la qualité du jus.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"279",cat:"Pro",type:"B2B",q:"Comment former mes remplaçants ?",a:"Je leur laisse une fiche \'Top 10\' simplifiée. Ils n\'ont qu\'à faire sentir ces 10 là pour réussir leurs premières ventes.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"281",cat:"Pro",type:"B2B",q:"Je veux pouvoir imprimer mes propres flyers.",a:"Je vous fournis les fichiers graphiques haute définition. Vous pouvez les personnaliser avec le logo de votre salon.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"283",cat:"Pro",type:"B2B",q:"Est-ce que je peux vendre aux hommes ET aux femmes ?",a:"C\'est l\'avantage de Chogan : notre catalogue est parfaitement équilibré. Vous doublez votre potentiel de vente.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"285",cat:"Pro",type:"B2B",q:"Est-ce que je peux avoir des sacs cadeaux Chogan ?",a:"Oui, ils sont disponibles à la commande pour offrir une expérience client complète, du test jusqu\'à l\'emballage.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"287",cat:"Pro",type:"B2B",q:"Les clients demandent des promotions.",a:"Proposez le format 15ml. C\'est un \'prix d\'appel\' qui fait office de promotion permanente pour les petits budgets.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"289",cat:"Pro",type:"B2B",q:"Est-ce que les senteurs durent plusieurs années ?",a:"Grâce à la concentration \'Extrait\', nos parfums sont très stables. Ils ne s\'oxydent pas rapidement s\'ils sont conservés normalement.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"291",cat:"Pro",type:"B2B",q:"Le catalogue est-il disponible en numérique ?",a:"Oui, je vous envoie le lien PDF. Vous pouvez le partager par WhatsApp à vos clientes fidèles pour préparer leurs commandes.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"292",cat:"Pro",type:"B2B",q:"Comment réagir à un client qui dit : \'C\'est trop beau pour être vrai\' ?",a:"Faites-le tester ! Le nez ne ment jamais. La preuve est dans le sillage, pas dans le discours.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"295",cat:"Pro",type:"B2B",q:"Est-ce que je peux faire gagner un parfum sur mes réseaux ?",a:"C\'est une excellente stratégie pour booster votre visibilité ! Un jeu concours avec un parfum Chogan attire beaucoup de monde.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"296",cat:"Pro",type:"B2B",q:"J\'ai peur de perdre du temps en discussion.",a:"Ciblez les moments d\'attente (pose de couleur, séchage). C\'est du temps \'mort\' que vous transformez en temps \'rentable\'.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"298",cat:"Pro",type:"B2B",q:"Comment valoriser le côté \'Extrait\' ?",a:"Dites : \'C\'est la forme la plus noble du parfum\'. C\'est plus concentré qu\'une eau de parfum, donc plus prestigieux et plus durable.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"299",cat:"Pro",type:"B2B",q:"Est-ce que je peux commander des testeurs à l\'unité ?",a:"Oui, si vous finissez un testeur très demandé, vous pouvez le recommander seul pour que votre mallette soit toujours complète.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"47",cat:"Promotion",type:"B2B",q:"Faites-vous des prix si j\'en prends trois ?",a:"Le prix est déjà au plus bas, mais je peux vous offrir un petit produit de la gamme corps pour vous remercier de votre fidélité.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"68",cat:"Provenance",type:"B2B",q:"Pourquoi c\'est écrit fabriqué en Italie et pas en France ?",a:"Parce que Chogan est une entreprise italienne. Ils assemblent les meilleures essences de Grasse avec le savoir-faire design italien.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"48",cat:"Proximité",type:"B2B",q:"J\'achète déjà chez une autre consultante.",a:"C\'est parfait ! L\'important est que vous profitiez des produits. Si elle n\'est pas disponible, je suis là pour vous dépanner.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"81",cat:"Proximité",type:"B2B",q:"Je peux le trouver ailleurs ?",a:"Seulement via des consultants agréés. C\'est ce qui garantit le conseil et évite les frais de boutique répercutés sur le prix.",kw:["Circuit court", "Marge", "Mallette", "Testeurs", "Partenariat"]},
-  {n:"34",cat:"Psychologie",type:"Général",q:"C\'est un achat impulsif, je vais regretter.",a:"À moins de 30€, le risque est minime pour un plaisir quotidien qui durera plusieurs mois. C\'est un cadeau à vous-même.",kw:["Plaisir", "Budget maîtrisé", "Sans culpabilité", "Cadeau soi", "Accessible"]},
-  {n:"24",cat:"Puissance",type:"Général",q:"C\'est trop fort pour moi.",a:"C\'est un extrait ! Une seule pression suffit. Vous ferez donc des économies énormes car vous utiliserez moins de produit.",kw:["1 pression", "Économie", "Extrait", "Concentration", "Longue durée"]},
-  {n:"85",cat:"Pureté",type:"Général",q:"C\'est gras sur la peau.",a:"C\'est l\'huile essentielle ! C\'est la preuve de la concentration. Tapotez légèrement, la peau absorbera les bienfaits de l\'essence.",kw:["Huile essentielle", "Concentration", "Tapoter", "Absorber", "Naturel"]},
-  {n:"56",cat:"Qualité",type:"Général",q:"Est-ce que l\'odeur change sur les vêtements ?",a:"Non, l\'odeur reste très fidèle sur le textile. C\'est d\'ailleurs une excellente astuce pour prolonger le sillage sans irriter la peau.",kw:["Constante", "Industriel", "Contrôlé", "Certifié", "Lot"]},
-  {n:"30",cat:"Quantité",type:"Général",q:"100ml c\'est trop gros.",a:"C\'est le format le plus rentable. Vous ne tomberez jamais en panne et vous pouvez même en transvaser un peu dans un petit vapo.",kw:["100ml", "Rentable", "Vapo", "Transvaser", "Durable"]},
-  {n:"72",cat:"Réaction",type:"Général",q:"Ça pique quand je le mets.",a:"Évitez de vaporiser juste après la douche ou le rasage quand les pores sont ouverts. Attendez 10 minutes et tout ira bien.",kw:["Pores", "Attendre", "10 min", "Vêtements", "Rasage"]},
-  {n:"26",cat:"Routine",type:"Général",q:"J\'ai déjà mon parfum depuis 10 ans.",a:"La fidélité c\'est bien, mais la découverte c\'est mieux. Essayez une alternative pour vos week-ends ou vos soirées.",kw:["Alterner", "Découverte", "Nez habitué", "Saisons", "Humeur"]},
-  {n:"63",cat:"Routine",type:"Général",q:"Je mets toujours le même depuis 20 ans.",a:"La fidélité est une belle qualité, mais votre nez finit par s\'habituer. Alterner permet de redécouvrir le plaisir de sentir bon.",kw:["Alterner", "Découverte", "Nez habitué", "Saisons", "Humeur"]},
-  {n:"90",cat:"Routine",type:"Général",q:"Je mets du déodorant, ça suffit.",a:"Le déodorant protège, le parfum habille. C\'est la touche finale qui change totalement la perception que les gens ont de vous.",kw:["Alterner", "Découverte", "Nez habitué", "Saisons", "Humeur"]},
-  {n:"54",cat:"Saison",type:"Général",q:"C\'est un parfum trop lourd pour l\'été.",a:"Vous avez raison. Pour les beaux jours, je vous suggère nos eaux fraîches ou nos senteurs fruitées qui sont beaucoup plus légères.",kw:["Frais", "Fruité", "Léger", "Boisé", "Adapté"]},
-  {n:"225",cat:"Salle de Sport",type:"B2B",q:"Les clients ne viennent pas avec de l\'argent.",a:"Proposez le paiement par Lydia ou virement, ou ajoutez-le simplement à leur abonnement mensuel si votre gestion le permet.",kw:["Qualité", "Prix", "Essences", "Certifié", "Grasse"]},
-  {n:"168",cat:"Salon",type:"B2B",q:"J\'ai déjà une autre marque de revente.",a:"Chogan se distingue par sa concentration à 30%. C\'est un produit d\'appel qui attire une clientèle différente, plus large.",kw:["Concentration", "Clientèle", "Revente", "Challenge", "Commission"]},
-  {n:"195",cat:"Salon",type:"B2B",q:"On est en zone rurale, les gens ne dépensent pas.",a:"Justement, ils apprécieront d\'autant plus d\'accéder à la haute parfumerie sans devoir aller en ville et sans payer le prix fort.",kw:["Concentration", "Clientèle", "Revente", "Challenge", "Commission"]},
-  {n:"217",cat:"Salon",type:"B2B",q:"Mon équipe n\'est pas motivée par la vente.",a:"Chogan propose des challenges stimulants. Une petite commission sur chaque flacon peut booster l\'enthousiasme de vos collaborateurs.",kw:["Concentration", "Clientèle", "Revente", "Challenge", "Commission"]},
-  {n:"223",cat:"Salon",type:"B2B",q:"Je préfère les marques françaises.",a:"Les essences viennent de Grasse ! C\'est le savoir-faire français dans un modèle économique italien ultra-performant.",kw:["Concentration", "Clientèle", "Revente", "Challenge", "Commission"]},
-  {n:"231",cat:"Salon",type:"B2B",q:"Est-ce que ça sent mauvais pendant l\'application ?",a:"Pas du tout. L\'alcool s\'évapore instantanément. Vous ne sentez que les notes de tête et de cœur, ce qui est très agréable en salon.",kw:["Concentration", "Clientèle", "Revente", "Challenge", "Commission"]},
-  {n:"244",cat:"Salon",type:"B2B",q:"L\'odeur du parfum couvre-t-elle celle de la laque ?",a:"Elle la sublime ! Un pshitt de parfum en finition masque les odeurs chimiques et laisse une impression de luxe durable.",kw:["Concentration", "Clientèle", "Revente", "Challenge", "Commission"]},
-  {n:"268",cat:"Salon",type:"B2B",q:"Est-ce que je peux offrir un parfum pour un lissage ?",a:"C\'est une excellente idée marketing ! Inclure un parfum dans vos prestations haut de gamme justifie vos tarifs et ravit la cliente.",kw:["Concentration", "Clientèle", "Revente", "Challenge", "Commission"]},
-  {n:"286",cat:"Salon",type:"B2B",q:"J\'ai peur que mes employés se servent.",a:"Gérez votre mallette comme votre caisse. Un inventaire rapide une fois par semaine suffit à garder le contrôle.",kw:["Concentration", "Clientèle", "Revente", "Challenge", "Commission"]},
-  {n:"178",cat:"Salon Homme",type:"B2B",q:"Les hommes n\'achètent pas de parfum en salon.",a:"Détrompez-vous. L\'homme est un acheteur fidèle. S\'il aime l\'odeur après sa taille de barbe, il l\'achètera sur le champ.",kw:["Concentration", "Clientèle", "Revente", "Challenge", "Commission"]},
-  {n:"208",cat:"Salon Homme",type:"B2B",q:"Les hommes ne demandent jamais de parfum.",a:"Ils ne demandent pas, mais ils achètent. Un spray après la barbe et ils repartent avec le flacon. C\'est une vente d\'impulsion masculine très forte.",kw:["Concentration", "Clientèle", "Revente", "Challenge", "Commission"]},
-  {n:"254",cat:"Salon Homme",type:"B2B",q:"Les hommes trouvent ça trop sophistiqué.",a:"Au contraire, l\'homme moderne apprécie l\'efficacité. Un parfum qui tient toute la journée avec un seul pshitt, c\'est l\'argument gagnant.",kw:["Concentration", "Clientèle", "Revente", "Challenge", "Commission"]},
-  {n:"274",cat:"Salon Homme",type:"B2B",q:"Les hommes ne portent que des marques de sport.",a:"Faites-leur tester nos fragrances boisées et épicées. Elles ont une virilité et une classe qui surpassent les parfums de vestiaire.",kw:["Concentration", "Clientèle", "Revente", "Challenge", "Commission"]},
-  {n:"294",cat:"Salon Homme",type:"B2B",q:"Les barbiers vendent déjà des huiles.",a:"Le parfum Chogan est le complément idéal de l\'huile de barbe. C\'est la touche finale pour un homme qui prend soin de lui.",kw:["Concentration", "Clientèle", "Revente", "Challenge", "Commission"]},
-  {n:"154",cat:"Salon Luxe",type:"B2B",q:"Ça va dégrader mon image de marque.",a:"Le design noir et or est très sobre. Proposer une alternative de luxe abordable montre que vous prenez soin du pouvoir d\'achat de vos clients.",kw:["Contenu premium", "Qualité égale", "Pas de décor", "Jus pur", "Accessible"]},
-  {n:"74",cat:"Service",type:"Général",q:"Je peux vous payer en deux fois ?",a:"C\'est possible pour une commande groupée. On peut s\'arranger pour que cela rentre dans votre budget.",kw:["Livraison", "Domicile", "Travail", "Rapide", "Pratique"]},
-  {n:"37",cat:"Sexe",type:"Général",q:"Je cherche un parfum mixte.",a:"Beaucoup de nos fragrances sont unisexes. L\'odeur n\'a pas de genre, seule votre peau décide si elle vous va.",kw:["Unisexe", "Boisé", "Floral", "Libre", "Sans genre"]},
-  {n:"96",cat:"Sexe",type:"Général",q:"Mon mari trouve que c\'est un truc de femme.",a:"Montrez-lui la gamme homme. Les flacons sont sobres et les senteurs très viriles (boisées, cuirées, épicées).",kw:["Unisexe", "Boisé", "Floral", "Libre", "Sans genre"]},
-  {n:"29",cat:"Sillage",type:"Général",q:"On ne sent pas mon parfum quand je passe.",a:"Avec 30% d\'essence, je vous garantis que votre sillage sera remarqué. C\'est la signature des extraits de parfum.",kw:["30%", "Extrait", "Remarqué", "Signature", "Puissant"]},
-  {n:"84",cat:"Sillage",type:"Général",q:"Je ne sens plus mon parfum au bout d\'une heure.",a:"C\'est la fatigue olfactive : votre nez s\'est habitué. Demandez à votre entourage, ils vous confirmeront que vous sentez très bon !",kw:["30%", "Extrait", "Remarqué", "Signature", "Puissant"]},
-  {n:"191",cat:"Spa",type:"B2B",q:"On ne vend que du naturel.",a:"Chogan propose des gammes Bio et des compositions très propres qui s\'intègrent parfaitement dans un univers bien-être.",kw:["Bio", "Naturel", "Bien-être", "Gamme propre", "Intégré"]},
-  {n:"38",cat:"Stock",type:"Général",q:"Le parfum va-t-il tourner ?",a:"Gardez-le à l\'abri de la lumière et de la chaleur. Grâce à sa haute concentration, il se conserve très bien plus d\'un an.",kw:["À l'abri", "Frais", "Obscurité", "24-36 mois", "Conservation"]},
-  {n:"80",cat:"Stock",type:"Général",q:"Combien de temps je peux garder le flacon ?",a:"Bien fermé et au frais, un extrait de parfum Chogan garde toutes ses propriétés pendant au moins 24 à 36 mois.",kw:["À l'abri", "Frais", "Obscurité", "24-36 mois", "Conservation"]},
-  {n:"3",cat:"Tenue",type:"Général",q:"Le parfum ne tient pas.",a:"La peau boit le parfum. Vaporisez sur vos vêtements ou utilisez notre lait corps assorti pour fixer l\'odeur 24h.",kw:["Vêtements", "Lait corps", "Fixer", "24h", "Extrait stable"]},
-  {n:"18",cat:"Tenue",type:"Général",q:"Les parfums pas chers ne tiennent pas.",a:"C\'est souvent vrai, sauf pour les \'Extraits\'. Avec 30% de fragrance, Chogan surpasse souvent les \'Eaux de Parfum\' du commerce.",kw:["Vêtements", "Lait corps", "Fixer", "24h", "Extrait stable"]},
-  {n:"89",cat:"Texture",type:"Général",q:"Le spray fait des grosses gouttes.",a:"Vaporisez d\'un geste franc à 15cm de la peau pour obtenir une fine brume qui répartira mieux les essences.",kw:["15cm", "Brume", "Fine", "Répartition", "Geste"]},
-  {n:"33",cat:"Transport",type:"Général",q:"Le grand flacon est lourd dans mon sac.",a:"Prenez un 35ml ! C\'est le format idéal pour les retouches en journée ou pour voyager léger.",kw:["35ml", "Cabine", "15ml", "Léger", "Sécurisé"]},
-  {n:"13",cat:"Usage",type:"Général",q:"Je ne me parfume que pour les sorties.",a:"À ce prix, vous pouvez vous offrir ce luxe chaque matin. Sentir bon booste votre confiance en vous, même pour rester chez soi.",kw:["Quotidien", "Confiance", "Plaisir", "Chaque jour", "Pour soi"]},
-  {n:"50",cat:"Usage",type:"Général",q:"Je le garde pour les fêtes.",a:"À ce prix, le luxe devient quotidien. Pourquoi attendre une occasion spéciale pour vous sentir exceptionnelle ?",kw:["Quotidien", "Confiance", "Plaisir", "Chaque jour", "Pour soi"]},
-  {n:"69",cat:"Usage",type:"Général",q:"Je ne sors pas beaucoup en ce moment.",a:"On se parfume d\'abord pour soi ! Sentir bon aide à garder le moral et à se sentir propre et élégant, même à la maison.",kw:["Quotidien", "Confiance", "Plaisir", "Chaque jour", "Pour soi"]},
-  {n:"25",cat:"Variété",type:"Général",q:"Vous n\'avez pas ma marque habituelle.",a:"Nous sortons des nouveautés chaque mois. Laissez-moi vos coordonnées, je vous préviendrai dès que votre fragrance arrive.",kw:["Nouveautés", "Notes", "Saisons", "Personnalisé", "Large choix"]},
-  {n:"79",cat:"Variété",type:"Général",q:"Je cherche un parfum pour le sport.",a:"Je vous conseille nos senteurs hespéridées (citron, bergamote). C\'est frais, dynamisant et parfait pour rester frais après l\'effort.",kw:["Nouveautés", "Notes", "Saisons", "Personnalisé", "Large choix"]},
-  {n:"27",cat:"Vente",type:"Général",q:"Je n\'aime pas acheter sur catalogue.",a:"Je ne vous vends pas un catalogue, je vous propose une expérience olfactive immédiate avec mes testeurs.",kw:["Testeurs", "Expérience", "Olfactif", "Sans catalogue", "Guidé"]},
-  {n:"76",cat:"Vente",type:"Général",q:"Je n\'aime pas commander sur catalogue.",a:"Moi non plus ! C\'est pour ça que j\'ai ma mallette de testeurs. On sent, on teste, et on ne commande que si on adore.",kw:["Testeurs", "Expérience", "Olfactif", "Sans catalogue", "Guidé"]},
-  {n:"62",cat:"Volume",type:"Général",q:"Je n\'arriverai jamais à finir 100ml.",a:"Pensez à l\'utiliser pour parfumer vos draps ou vos rideaux. C\'est un petit luxe qui change l\'ambiance de votre maison.",kw:["Draps", "Rideaux", "Ambiance", "Maison", "Luxe quotidien"]},
-  {n:"64",cat:"Voyage",type:"Général",q:"Est-ce que ça passe en cabine d\'avion ?",a:"Le format 35ml et le 15ml sont parfaits pour voyager. Ils respectent les normes de sécurité et ne prennent pas de place.",kw:["35ml", "15ml", "Cabine", "Norme", "Compact"]}
+/* ═══════════ OBJECTIONS DATA ═══════════
+   pub: "gen" = Général | "b2c" = Client | "b2b" = Pro
+════════════════════════════════════════ */
+const OBJECTIONS = [
+// ─── PRIX ───
+{id:1,cat:"Prix",pub:"gen",q:"C'est trop cher pour moi.",a:"C'est un extrait à 30%. Un flacon 100ml dure 4 mois : moins de 25 centimes par jour pour l'excellence italienne."},
+{id:2,cat:"Prix",pub:"gen",q:"Pourquoi payer autant pour une marque que je ne connais pas ?",a:"Vous payez la marque en grande parfumerie. Ici vous payez le jus. Nos essences viennent de la même filière que les plus grandes maisons."},
+{id:3,cat:"Prix",pub:"gen",q:"J'ai vu des parfums moins chers en supermarché.",a:"En supermarché c'est une EDT à 5-8% de concentration. Nos extraits à 30% tiennent 4x plus longtemps : le rapport qualité/prix est imbattable."},
+{id:4,cat:"Prix",pub:"gen",q:"Le prix a augmenté depuis ma dernière commande.",a:"Nos prix sont stables depuis 3 ans. Si un tarif a changé, c'est peut-être le format. Lequel cherchiez-vous ? Je vérifie pour vous."},
+{id:5,cat:"Prix",pub:"gen",q:"Pour ce prix le flacon devrait être plus beau.",a:"Au restaurant vous payez le plat, pas la vaisselle. En uniformisant nos flacons, tout votre argent va dans l'essence, pas dans le verre."},
+{id:6,cat:"Prix",pub:"gen",q:"Je peux trouver moins cher sur internet.",a:"Faites attention aux contrefaçons. Nos extraits authentiques ont un N° de lot traçable. Aucune offre en ligne ne garantit ça à ce prix."},
+{id:7,cat:"Prix",pub:"gen",q:"C'est cher pour quelque chose que j'utilise tous les jours.",a:"Justement, 25 centimes par jour c'est moins qu'un café. Et un extrait 30% s'utilise en une seule pression, là où vous en mettriez 4 avec une EDT."},
+{id:8,cat:"Prix",pub:"gen",q:"Vous faites des remises pour les fidèles ?",a:"Notre tarif est déjà le meilleur possible toute l'année car nous n'avons pas d'intermédiaire. Pas de soldes, pas de remises cachées : juste le vrai prix."},
+{id:9,cat:"Prix",pub:"gen",q:"Pour une première commande c'est un investissement.",a:"C'est pour ça que le 15ml existe ! Vivez avec le parfum quelques jours pour seulement quelques euros. Vous ne regretterez pas d'avoir commandé le grand format ensuite."},
+{id:10,cat:"Prix",pub:"b2c",q:"J'attends les soldes pour acheter.",a:"Nous sommes en prix direct usine toute l'année. Nos prix sont déjà inférieurs à n'importe quelle solde des grandes marques."},
+{id:11,cat:"Prix",pub:"b2c",q:"Le même prix pour 50ml ou 100ml ?",a:"Le 100ml est toujours plus avantageux au ml. Et avec un extrait 30%, le 50ml dure déjà 2 mois. On peut calculer ensemble selon votre usage."},
+{id:12,cat:"Prix",pub:"b2b",q:"Si je commande en grande quantité, il y a un tarif spécial ?",a:"En tant que consultante, vous bénéficiez déjà du tarif préférentiel. Plus vous développez votre réseau, plus vos avantages augmentent."},
+
+// ─── QUALITÉ ───
+{id:13,cat:"Qualité",pub:"gen",q:"Est-ce que la qualité est vraiment au niveau des grandes maisons ?",a:"Nos essences sont achetées chez Fragworld, filière Grasse — exactement le même fournisseur que de nombreuses grandes maisons. La différence ? Pas de budget pub."},
+{id:14,cat:"Qualité",pub:"gen",q:"J'ai peur que ça fasse 'toc'.",a:"Le 'toc' c'est la concentration. Une EDT à 5% ou un spray de voiture, c'est du toc. Un extrait à 30% issu de Grasse, c'est la définition même de la qualité."},
+{id:15,cat:"Qualité",pub:"gen",q:"Mon amie a eu un parfum qui lui a irrité la peau.",a:"Les irritations viennent souvent des fixateurs artificiels des grandes marques. Nos extraits sont plus naturels et sans allergènes courants. Qu'a-t-elle porté ?"},
+{id:16,cat:"Qualité",pub:"gen",q:"Comment comparer la qualité sans sentir en boutique ?",a:"C'est pour ça que le 15ml existe. Commandez d'abord votre testeur. Aucun engagement, et vous découvrez la qualité sur votre peau, pas sur un présentoir."},
+{id:17,cat:"Qualité",pub:"gen",q:"J'ai lu des avis négatifs en ligne.",a:"Pouvez-vous me montrer l'avis ? Il y a souvent des confusions avec d'autres marques. Nos vrais clients sont nos meilleures ambassadrices, je peux vous en mettre en contact."},
+{id:18,cat:"Qualité",pub:"gen",q:"La couleur du jus me fait peur, c'est normal ?",a:"Tout à fait normal ! La couleur ambrée vient des huiles essentielles naturelles. Un parfum incolore est souvent plus synthétique, pas plus qualitatif."},
+{id:19,cat:"Qualité",pub:"gen",q:"Avez-vous des labels de qualité certifiés ?",a:"Nos produits respectent les normes IFRA et les réglementations européennes strictes sur les cosmétiques. C'est le gage de qualité le plus solide qui soit."},
+{id:20,cat:"Qualité",pub:"b2c",q:"Je préfère les marques testées depuis des années.",a:"La satisfaction de milliers de clientes depuis 2013 est notre meilleur label. Je peux vous montrer des témoignages ou vous mettre en contact avec une cliente dans votre ville."},
+
+// ─── TENUE / SILLAGE ───
+{id:21,cat:"Tenue",pub:"gen",q:"Le parfum ne tient pas plus de 2 heures sur moi.",a:"Essayez de vaporiser sur vos vêtements ou sur vos cheveux — la tenue est multipliée par 3. Le lait corps assorti sur la peau avant le parfum fixe aussi les molécules odorantes."},
+{id:22,cat:"Tenue",pub:"gen",q:"Mon entourage ne le sent pas assez fort.",a:"C'est souvent la peau qui 'mange' le parfum. Hydratez bien avant d'appliquer. Et rappel : une seule pression suffit avec un extrait 30%."},
+{id:23,cat:"Tenue",pub:"gen",q:"Après une journée le parfum a complètement disparu.",a:"Appliquez sur les points de chaleur : intérieur des poignets, nuque, pli des coudes. La chaleur naturelle libère les molécules tout au long de la journée."},
+{id:24,cat:"Tenue",pub:"gen",q:"La tenue varie selon les jours, pourquoi ?",a:"La tenue dépend de l'hydratation de votre peau et de votre ph du moment. Une peau bien hydratée fixe mieux les parfums. Les hormones influent aussi légèrement."},
+{id:25,cat:"Tenue",pub:"gen",q:"En été il s'évapore trop vite.",a:"Vaporisez sur les vêtements en été. La chaleur accélère l'évaporation sur la peau, mais les fibres retiennent les molécules plusieurs heures."},
+{id:26,cat:"Tenue",pub:"gen",q:"Sur mes vêtements ça tient, sur ma peau non.",a:"C'est exactement la bonne technique ! Vaporiser sur les vêtements est même recommandé. Attention juste aux soieries et tissus délicats."},
+{id:27,cat:"Tenue",pub:"gen",q:"Le parfum sent différemment au bout d'une heure.",a:"C'est la pyramide olfactive qui se déploie. Les notes de tête s'évaporent en premier (30min), puis viennent les notes de cœur et de fond. C'est le signe d'un vrai parfum de qualité."},
+{id:28,cat:"Tenue",pub:"b2c",q:"Après le sport le parfum disparaît complètement.",a:"La transpiration modifie le pH et dissout les molécules. Gardez un 15ml dans votre sac de sport pour reappliquer. Un extrait 30% reste efficace avec une très petite quantité."},
+
+// ─── CONFIANCE ───
+{id:29,cat:"Confiance",pub:"gen",q:"Je ne connais pas la marque.",a:"Nous ne faisons pas de pub TV. Notre seule publicité c'est votre satisfaction et le bouche-à-oreille. Plus de 200 000 clientes en Europe témoignent mieux que n'importe quelle campagne."},
+{id:30,cat:"Confiance",pub:"gen",q:"Comment je sais que c'est authentique ?",a:"Chaque flacon porte un numéro de lot traçable jusqu'à l'usine italienne. Je peux aussi vous montrer les certifications et vous mettre en contact avec l'équipe officielle."},
+{id:31,cat:"Confiance",pub:"gen",q:"Je fais confiance qu'aux marques établies.",a:"Chogan existe depuis 2013, avec des milliers de consultantes dans toute l'Europe. La confiance se construit sur les résultats, pas sur l'ancienneté d'une campagne pub."},
+{id:32,cat:"Confiance",pub:"gen",q:"J'ai vu ça sur les réseaux sociaux, c'est une vraie entreprise ?",a:"Chogan SpA est une société italienne avec siège social, bilan annuel publié et présence dans plus de 20 pays. Je peux vous envoyer les coordonnées officielles."},
+{id:33,cat:"Confiance",pub:"gen",q:"Comment être sûr de ne pas se faire arnaquer ?",a:"Vous passez commande via votre consultante officielle qui a un numéro de consultant vérifiable sur le site Chogan. Aucun prélèvement automatique, aucun abonnement caché."},
+{id:34,cat:"Confiance",pub:"gen",q:"Vos témoignages me semblent trop parfaits.",a:"Je comprends la méfiance. C'est pour ça que je vous propose un 15ml sans engagement. Formez-vous votre propre avis plutôt que de vous fier aux avis des autres."},
+
+// ─── LÉGALITÉ / INSPIRATION ───
+{id:35,cat:"Légalité",pub:"gen",q:"C'est de la copie ?",a:"Non, c'est une inspiration légale. Nous achetons les essences chez Fragworld, le même fournisseur que les grandes marques. L'olfaction ne se brevète pas, seul le nom l'est."},
+{id:36,cat:"Légalité",pub:"gen",q:"Est-ce légal de copier les grandes marques ?",a:"On ne copie pas, on s'inspire de familles olfactives. C'est exactement ce que font les marques de niche entre elles. La jurisprudence européenne confirme la légalité totale de cette pratique."},
+{id:37,cat:"Légalité",pub:"gen",q:"Les parfumeurs de luxe peuvent vous poursuivre ?",a:"Non. La CJUE a confirmé que les fragrances ne sont pas protégées par le droit d'auteur. C'est une pratique reconnue et légale dans toute l'Europe."},
+{id:38,cat:"Légalité",pub:"gen",q:"C'est la même formule ou juste une inspiration ?",a:"Une inspiration olfactive similaire, pas la formule exacte. Nos maîtres-parfumeurs créent leurs propres formules à partir des mêmes essences de Grasse. Parfois le résultat surpasse l'original."},
+{id:39,cat:"Légalité",pub:"gen",q:"Il y a une différence entre copie et inspiration ?",a:"Absolument. La copie reproduit un nom, un flacon, un logo — c'est illégal. L'inspiration olfactive part d'une famille de senteurs pour créer quelque chose de propre. C'est notre approche."},
+
+// ─── NATUREL / ÉTHIQUE ───
+{id:40,cat:"Éthique",pub:"gen",q:"Est-ce testé sur les animaux ?",a:"Non. Chogan respecte et dépasse les normes européennes qui interdisent strictement les tests sur les animaux pour tous les cosmétiques."},
+{id:41,cat:"Éthique",pub:"gen",q:"Est-ce que c'est bio ?",a:"Non certifié bio, mais nous minimisons les fixateurs chimiques au profit d'essences naturelles de haute qualité. Nos formules sont conformes aux normes IFRA les plus strictes."},
+{id:42,cat:"Éthique",pub:"gen",q:"Y a-t-il des perturbateurs endocriniens ?",a:"Nos formules respectent le règlement CE 1223/2009 et les recommandations IFRA. Les substances préoccupantes listées par l'ANSES sont exclues de nos formulations."},
+{id:43,cat:"Éthique",pub:"gen",q:"Je suis sensible aux parfums synthétiques.",a:"Nos extraits contiennent une proportion plus élevée d'huiles essentielles naturelles que la plupart des EDT du marché. Commencez avec un 15ml et testez sur votre poignet."},
+{id:44,cat:"Éthique",pub:"gen",q:"L'entreprise est-elle éco-responsable ?",a:"Chogan travaille à réduire son empreinte carbone. Nos flacons sont standardisés pour minimiser les déchets d'emballage et les recharges sont disponibles sur plusieurs références."},
+{id:45,cat:"Éthique",pub:"b2c",q:"Y a-t-il beaucoup d'alcool dans vos parfums ?",a:"L'alcool est le vecteur qui transporte l'essence. Attendez 30 secondes après la vaporisation : l'alcool s'évapore et révèle les 30% d'huiles essentielles pures. C'est normal et inévitable."},
+
+// ─── CHOIX / ORIENTATION ───
+{id:46,cat:"Choix",pub:"gen",q:"Il y a trop de références, je suis perdue.",a:"Dites-moi ce que vous portez habituellement — je vous trouve votre jumeau olfactif en quelques secondes. Florale, orientale, fraîche, boisée : on va cerner votre famille en 2 questions."},
+{id:47,cat:"Choix",pub:"gen",q:"Je ne sais pas par où commencer.",a:"On commence par votre parfum actuel. Vous l'aimez pour quelle raison — la fraîcheur, la sensualité, la légèreté ? En 3 mots, je vous oriente vers votre référence idéale."},
+{id:48,cat:"Choix",pub:"gen",q:"Comment choisir entre un floral et un oriental ?",a:"Un floral est frais et léger, parfait pour le quotidien. Un oriental est plus chaud et sensuel, idéal pour le soir. Vous cherchez plutôt pour quelle occasion ?"},
+{id:49,cat:"Choix",pub:"gen",q:"J'ai une peau qui 'mange' les parfums.",a:"Optez directement pour l'extrait de parfum 30% plutôt qu'une EDT. Sur peau sèche, hydratez d'abord avec notre lait corps — ça change tout à la tenue."},
+{id:50,cat:"Choix",pub:"b2c",q:"Je veux quelque chose d'unique, pas ce que tout le monde porte.",a:"Nos inspirations de niche sont justement faites pour ça. Je peux vous orienter vers des références moins connues mais absolument remarquables. Vous aimez quoi — le boisé, le cuiré, l'aquatique ?"},
+{id:51,cat:"Choix",pub:"b2c",q:"J'aimerais quelque chose de discret pour le bureau.",a:"Les fraîches et aquatiques sont idéales : elles ont un sillage proche qui ne gêne pas les collègues tout en étant élégantes. Je vous montre nos meilleures références dans cette famille."},
+{id:52,cat:"Choix",pub:"b2c",q:"Pour un homme de 60 ans, vous conseillez quoi ?",a:"À cet âge on apprécie souvent les boisés nobles, les cuirés ou les chyprés — des références élégantes et affirmées sans être envahissantes. Vous avez une préférence entre classique et moderne ?"},
+
+// ─── COMPARAISON ───
+{id:53,cat:"Comparaison",pub:"gen",q:"Ça ressemble aux parfums de supermarché ?",a:"Pas du tout. Nos essences de Grasse ont une tenue et un sillage dignes des plus grandes maisons. Un parfum de supermarché titre entre 5 et 10% de concentration. Le nôtre est à 30%."},
+{id:54,cat:"Comparaison",pub:"gen",q:"Dior et Chanel font la même chose non ?",a:"Non. Les grandes maisons utilisent aussi des essences de Grasse, mais dépensent 60 à 80% de leur budget en marketing, packagings et distribution. Vous payez surtout l'image."},
+{id:55,cat:"Comparaison",pub:"gen",q:"Quelle différence avec les marques de niche comme Diptyque ?",a:"La différence ? Le prix. Les marques de niche facturent l'image confidentielle. Chogan facture uniquement la qualité du jus. Les essences peuvent être de niveau comparable."},
+{id:56,cat:"Comparaison",pub:"gen",q:"On me dit que c'est du pareil au même que les copies chinoises.",a:"La différence est fondamentale : les copies chinoises utilisent des matières synthétiques bas de gamme. Nous utilisons des essences naturelles certifiées, issues de Grasse — traçables et contrôlées."},
+{id:57,cat:"Comparaison",pub:"b2c",q:"Comparé à Jo Malone, vous proposez quoi de plus ?",a:"Jo Malone est une EDT à 10-15% vendue 180€. Chogan est un extrait à 30% vendu en direct. La même famille olfactive, une tenue supérieure, un prix 3 à 4 fois moins élevé."},
+
+// ─── ALCOOL ───
+{id:58,cat:"Alcool",pub:"gen",q:"Ça sent trop l'alcool au début.",a:"C'est normal : l'alcool est le vecteur qui transporte l'essence. Attendez 30 secondes — il s'évapore et révèle les 30% d'huiles essentielles. C'est la signature des vrais extraits."},
+{id:59,cat:"Alcool",pub:"gen",q:"Je suis intolérante à l'alcool sur la peau.",a:"Vaporisez sur vos vêtements plutôt que sur la peau. Le résultat est même meilleur en termes de tenue, et vous évitez tout contact direct."},
+
+// ─── ÉCHANTILLON ───
+{id:60,cat:"Échantillon",pub:"gen",q:"Je veux un échantillon gratuit d'abord.",a:"Le format 15ml est notre testeur officiel. À ce prix, il vous permet de vivre avec le parfum plusieurs jours pour être sûre à 100% avant de choisir votre grand format."},
+{id:61,cat:"Échantillon",pub:"gen",q:"Vous pouvez m'envoyer un échantillon par courrier ?",a:"Je peux vous proposer le 15ml en commande directe. C'est peu coûteux et ça vous donne vraiment le temps de tomber amoureuse du parfum sur votre peau."},
+{id:62,cat:"Échantillon",pub:"b2c",q:"Mon nez est saturé, je ne sais plus distinguer.",a:"Normal après plusieurs sentis ! Sentez votre avant-bras nu ou du café pour réinitialiser votre odorat. Je vous laisse les testeurs à emporter et vous me dites demain."},
+{id:63,cat:"Échantillon",pub:"b2c",q:"Je veux tester 3 parfums différents avant de choisir.",a:"Absolument, c'est la meilleure méthode. Je vous propose un lot de 3 testeurs 15ml pour quelques euros — vous prenez le temps qu'il faut, sans pression."},
+
+// ─── CADEAU ───
+{id:64,cat:"Cadeau",pub:"b2c",q:"J'ai peur de me tromper pour offrir.",a:"Avec nos prix, offrez un coffret de 3 formats 15ml pour le prix d'un seul parfum en grande parfumerie. La personne garde ce qu'elle aime et l'expérience devient un voyage olfactif."},
+{id:65,cat:"Cadeau",pub:"b2c",q:"Je veux offrir mais je ne connais pas ses goûts.",a:"Dites-moi son profil : femme ou homme, quel âge, plutôt sport/élégant/sensuel ? En 2 questions je cible la famille idéale. Et le 15ml reste un cadeau parfait si on hésite."},
+{id:66,cat:"Cadeau",pub:"b2c",q:"Pour un budget de 30€ je peux offrir quoi ?",a:"Pour 30€ vous pouvez offrir un 15ml + un lait corps de la même ligne — c'est un joli coffret, présenté dans notre boîte, avec un sillage parfaitement assorti."},
+
+// ─── ACHAT ONLINE / PRÉSENTIEL ───
+{id:67,cat:"Distribution",pub:"gen",q:"Je préfère toucher le produit avant d'acheter.",a:"C'est exactement l'avantage de passer par votre consultante plutôt qu'une boutique : je vous apporte les testeurs chez vous, à votre rythme, sans la pression d'un vendeur."},
+{id:68,cat:"Distribution",pub:"gen",q:"Je préfère acheter en magasin.",a:"En magasin vous payez 80% de marketing, de loyers et d'intermédiaires. Chez Chogan, vous payez 100% du jus. C'est exactement la même qualité de matière, sans le ticket d'entrée."},
+{id:69,cat:"Distribution",pub:"b2c",q:"Comment retourner si ça ne me convient pas ?",a:"Le retour est possible dans les conditions générales de vente. Mais en commandant d'abord un 15ml testeur, le risque est quasi nul — vous savez exactement ce que vous achetez."},
+{id:70,cat:"Distribution",pub:"b2c",q:"La livraison est rapide ?",a:"En général 3 à 5 jours ouvrés. Si vous passez commande avant jeudi, vous pouvez l'avoir pour le week-end. Je peux suivre votre colis en temps réel."},
+
+// ─── INTENSITÉ ───
+{id:71,cat:"Intensité",pub:"gen",q:"C'est trop fort pour moi.",a:"C'est un extrait 30% ! Une seule pression suffit, voire une demi. Vous en utiliserez 4 fois moins qu'avec une EDT classique. Au bout de 20 minutes, le sillage se fond parfaitement."},
+{id:72,cat:"Intensité",pub:"gen",q:"Le parfum me donne mal à la tête.",a:"C'est souvent dû aux fixateurs synthétiques des grandes marques. Nos extraits sont plus naturels. Essayez à faible dose sur les chevilles — plus loin du nez, le sillage remonte doucement."},
+{id:73,cat:"Intensité",pub:"b2c",q:"Mon mari dit que ça l'étouffe.",a:"Un extrait 30% bien appliqué ne doit pas 'étouffer'. Essayez une seule pression dans le bas du dos ou sur les vêtements. La diffusion est alors très enveloppante sans être intrusive."},
+
+// ─── ROUTINE / HABITUDE ───
+{id:74,cat:"Routine",pub:"b2c",q:"Mon parfum depuis 10 ans c'est Coco Mademoiselle.",a:"Nous avons une inspiration très proche dans notre catalogue. Portez-la une semaine — si vous ne la distinguez pas, vous aurez un parfum à 25ct/jour au lieu de 120€ la pièce."},
+{id:75,cat:"Routine",pub:"b2c",q:"Je change jamais de parfum, c'est ma signature.",a:"Votre signature peut avoir son jumeau olfactif chez Chogan. Et avoir un deuxième flacon pour les voyages ou le sac à main c'est souvent ce qui déclenche la curiosité."},
+{id:76,cat:"Routine",pub:"b2c",q:"Changer de parfum ça prend des mois pour s'habituer.",a:"Je comprends. Commencez par le garder dans votre sac pour les retouches. Beaucoup de nos clientes sont restées sur leur marque principale... jusqu'au jour où leur entourage a remarqué leur nouvelle fragrance."},
+{id:77,cat:"Routine",pub:"b2c",q:"Ma famille m'a offert ce parfum depuis des années.",a:"C'est touchant. Mais proposez à votre famille de vous offrir le même montant en Chogan — vous aurez 4 à 5 fois plus de parfum pour la même valeur sentimentale."},
+{id:78,cat:"Routine",pub:"b2c",q:"Je commande mon parfum en automatique sur le site de la marque.",a:"Commandez votre inspiration Chogan une seule fois. Si après un mois vous ressentez la différence — en tenue, en sillage, en authenticité — votre abonnement automatique change de site."},
+
+// ─── CONCLUSION / HÉSITATION ───
+{id:79,cat:"Conclusion",pub:"gen",q:"Je vais réfléchir.",a:"Gardez ce testeur sur votre poignet. Si demain matin vous le sentez encore et qu'il vous plaît, rappellez-moi. Les bons parfums parlent d'eux-mêmes sur la durée."},
+{id:80,cat:"Conclusion",pub:"gen",q:"C'est pas le bon moment pour moi.",a:"Aucun problème. Je note votre préférence et je vous recontacte dans un mois. Entre-temps, le 15ml reste disponible si vous voulez profiter de cette occasion."},
+{id:81,cat:"Conclusion",pub:"gen",q:"Je dois en parler à mon mari.",a:"Bien sûr ! D'ailleurs un avis extérieur est toujours intéressant en matière de parfum. Demandez-lui de le sentir sur vous ce soir — c'est souvent la meilleure publicité."},
+{id:82,cat:"Conclusion",pub:"gen",q:"Envoyez-moi des informations par message.",a:"Je vous envoie ça tout de suite. Et je glisse un testeur avec si vous êtes dans le secteur — une odeur vaut mille mots."},
+{id:83,cat:"Conclusion",pub:"gen",q:"Je rappellerai plus tard.",a:"Bien sûr, prenez votre temps. Pour ne pas oublier, je vous propose de fixer un rappel maintenant — 5 minutes dans 3 jours, et si ça ne vous convient plus je décroche à la première sonnerie."},
+{id:84,cat:"Conclusion",pub:"gen",q:"Je veux pas m'engager aujourd'hui.",a:"Le 15ml n'engage à rien. Pas d'abonnement, pas de minimum. Juste la chance de tomber amoureuse d'un parfum sans risque financier."},
+{id:85,cat:"Conclusion",pub:"gen",q:"Je suis déjà cliente chez quelqu'un d'autre.",a:"Tant mieux ! Continuez avec votre consultante actuelle si vous en êtes satisfaite. Si jamais vous cherchez une nouvelle référence ou un conseil, je suis là."},
+{id:86,cat:"Conclusion",pub:"gen",q:"Je vais voir les autres stands d'abord.",a:"Tout à fait ! En revenant ici, comparez la concentration : EDT 5-10% vs notre extrait 30%. Vous verrez la différence au bout d'une heure de tenue sur votre peau."},
+
+// ─── LUXE / IMAGE ───
+{id:87,cat:"Luxe",pub:"gen",q:"Si c'est pas cher, c'est bas de gamme.",a:"Au restaurant vous payez aussi le décor et le service. Ici vous payez uniquement le plat. La qualité du jus est identique aux grandes maisons — c'est le service autour que vous ne payez plus."},
+{id:88,cat:"Luxe",pub:"gen",q:"J'ai besoin d'une belle marque pour offrir en cadeau.",a:"Le prestige est dans l'effet que fait le parfum, pas dans l'étiquette. Offrez un extrait 30% issu de Grasse dans notre boîte élégante — le destinataire sentira la différence."},
+{id:89,cat:"Luxe",pub:"b2c",q:"Je veux un parfum de niche vraiment original.",a:"Nous avons des inspirations de maisons confidentielles que peu de gens connaissent. Quelle famille olfactive vous attire ? Je vous trouve quelque chose de mémorable."},
+
+// ─── FLACON ───
+{id:90,cat:"Flacon",pub:"gen",q:"Le design du flacon est trop simple.",a:"Le luxe est à l'intérieur. En standardisant nos flacons, chaque centime va dans l'essence, pas dans la fonte de verre. C'est un choix délibéré de valeur, pas d'économie."},
+{id:91,cat:"Flacon",pub:"b2c",q:"Pour offrir, le flacon ne fait pas 'cadeau'.",a:"Je comprends. Nous avons des coffrets cadeaux avec présentation soignée. Pour un cadeau marquant, je peux aussi vous conseiller d'associer un parfum et son lait corps assorti."},
+
+// ═══ B2B EXCLUSIF ═══
+
+// ─── BUSINESS / MARGES ───
+{id:92,cat:"Business",pub:"b2b",q:"Quelles sont les marges pour un revendeur ?",a:"En tant que consultante Chogan, vous bénéficiez d'un tarif préférentiel significatif sur les produits. La marge nette dépend de votre mode de vente — je peux vous détailler les paliers."},
+{id:93,cat:"Business",pub:"b2b",q:"C'est du MLM non ?",a:"Chogan est un modèle de vente directe. Vous pouvez vendre sans recruter et gagner votre vie uniquement sur les ventes. Le recrutement est une option, pas une obligation."},
+{id:94,cat:"Business",pub:"b2b",q:"J'ai peur de ne pas vendre assez pour rentabiliser.",a:"Avec un seul client fidèle qui commande un extrait par mois, vous êtes déjà rentable. La plupart de mes nouvelles consultantes remboursent leur kit de démarrage dès la première semaine."},
+{id:95,cat:"Business",pub:"b2b",q:"Quel chiffre d'affaires minimum pour rester active ?",a:"Les conditions d'activité sont accessibles et clairement définies dans le plan marketing. Je vous envoie le document détaillé — elles sont conçues pour ne pas pénaliser les débutantes."},
+{id:96,cat:"Business",pub:"b2b",q:"Je peux vendre sur Amazon ou eBay ?",a:"La revente sur les marketplaces tiers n'est pas autorisée par Chogan pour protéger la qualité et la traçabilité. La vente directe via vos réseaux personnels est bien plus efficace."},
+{id:97,cat:"Business",pub:"b2b",q:"Les produits peuvent être vendus dans mon salon ?",a:"Absolument ! Un salon est un endroit idéal — vos clientes sont déjà dans une démarche de bien-être et beauté. Beaucoup de nos meilleures consultantes exercent dans le secteur des soins."},
+{id:98,cat:"Business",pub:"b2b",q:"Est-ce que je peux avoir l'exclusivité sur ma zone ?",a:"Chogan ne fonctionne pas avec des zones exclusives, ce qui vous permet de vendre partout en France et en Europe. C'est un avantage : votre marché n'est pas limité géographiquement."},
+
+// ─── RECRUTEMENT ───
+{id:99,cat:"Recrutement",pub:"b2b",q:"Je suis timide, je ne peux pas recruter.",a:"La timidité est souvent une force en vente directe : on écoute mieux. Et vous n'avez pas à recruter pour réussir — la vente seule peut vous apporter un revenu complémentaire confortable."},
+{id:100,cat:"Recrutement",pub:"b2b",q:"Je n'ai pas de réseau pour commencer.",a:"Vos premiers clients sont souvent votre entourage proche. 10 personnes qui commandent régulièrement, c'est déjà un revenu stable. Le réseau se construit naturellement avec le bouche-à-oreille."},
+{id:101,cat:"Recrutement",pub:"b2b",q:"Mes amis vont penser que je fais du MLM.",a:"Montrez-leur le produit plutôt que le business. Quand quelqu'un sent un extrait 30% issu de Grasse, les questions sur le modèle économique viennent ensuite d'elles-mêmes."},
+{id:102,cat:"Recrutement",pub:"b2b",q:"Je dois payer pour rejoindre l'équipe ?",a:"Un kit de démarrage est disponible. Son coût est très faible et contient tout ce dont vous avez besoin pour vos premières présentations. Il est remboursé dès vos premières ventes."},
+{id:103,cat:"Recrutement",pub:"b2b",q:"Qu'est-ce qui se passe si je n'atteins pas les objectifs ?",a:"Chogan ne vous pénalise pas. Si vous ne vendez pas suffisamment pour rester active, vous pouvez simplement continuer en tant que cliente. Aucune dette, aucune obligation."},
+{id:104,cat:"Recrutement",pub:"b2b",q:"Comment je me différencie des autres consultantes Chogan ?",a:"Par votre personnalité, votre service et votre expertise. Je vous forme à conseiller comme un nez professionnel. La différence ce n'est pas le produit — c'est vous."},
+
+// ─── FORMATION ───
+{id:105,cat:"Formation",pub:"b2b",q:"Vous me formez comment au départ ?",a:"Je vous accompagne personnellement lors de vos premières présentations. Des modules de formation en ligne sont également disponibles 24h/24. Vous ne partez jamais seule."},
+{id:106,cat:"Formation",pub:"b2b",q:"Si j'ai une question urgente, qui je contacte ?",a:"Moi d'abord — je suis votre upline directe et je réponds en moins d'une heure. Chogan dispose aussi d'un support officiel pour les questions administratives et logistiques."},
+{id:107,cat:"Formation",pub:"b2b",q:"Il y a des réunions d'équipe régulières ?",a:"Nous organisons des calls d'équipe chaque semaine et des événements mensuels. C'est l'occasion de partager les meilleures techniques de vente et de rester motivé."},
+{id:108,cat:"Formation",pub:"b2b",q:"Il y a un script de vente fourni ?",a:"Oui, des supports sont disponibles, mais le vrai script c'est l'histoire de votre propre découverte. Les clientes achètent à quelqu'un en qui elles ont confiance, pas à un robot."},
+
+// ─── STOCK / LOGISTIQUE ───
+{id:109,cat:"Logistique",pub:"b2b",q:"Je dois avoir du stock chez moi ?",a:"Non, c'est un des avantages de Chogan. Vous commandez à la demande pour vos clients — pas de stock à financer, pas de risque d'invendu. Les commandes partent directement de l'entrepôt."},
+{id:110,cat:"Logistique",pub:"b2b",q:"Où je commande et quel est le délai ?",a:"Vous passez commande via votre espace consultant en ligne. Délai moyen : 3 à 5 jours ouvrés. La livraison est directe chez vous ou chez votre cliente selon votre choix."},
+{id:111,cat:"Logistique",pub:"b2b",q:"Les produits ont quelle date de péremption ?",a:"Les parfums Chogan ont une durée de conservation de 36 mois à partir de la date de fabrication. Conservés à l'abri de la chaleur et de la lumière, ils gardent leur qualité bien au-delà."},
+{id:112,cat:"Logistique",pub:"b2b",q:"Il y a des ruptures de stock fréquentes ?",a:"Sur les références classiques, très rarement. Les nouveautés peuvent occasionnellement être en attente lors des lancements. Je surveille les disponibilités pour mes clientes régulières."},
+{id:113,cat:"Logistique",pub:"b2b",q:"Comment gérer les réclamations clients ?",a:"Je gère toujours la réclamation en premier et rapidement. Un client mécontent bien traité devient le client le plus fidèle. Chogan supporte les retours conformes à ses CGV."},
+
+// ─── LÉGITIMITÉ PRO ───
+{id:114,cat:"Légitimité",pub:"b2b",q:"Est-ce que Chogan est légal en tant que revente ?",a:"Tout à fait légal. La vente directe est un secteur réglementé en France (FVD). Chogan est une entreprise italienne déclarée, avec des contrats de consultant officiels."},
+{id:115,cat:"Légitimité",pub:"b2b",q:"J'ai besoin d'un statut légal particulier pour vendre ?",a:"Le statut de micro-entrepreneur est le plus adapté et le plus simple à créer. Je peux vous guider dans les démarches — c'est faisable en ligne en moins d'une heure."},
+{id:116,cat:"Légitimité",pub:"b2b",q:"Comment déclarer les revenus de revente ?",a:"En tant que micro-entrepreneur, vous déclarez votre chiffre d'affaires mensuellement ou trimestriellement. Un comptable ou une application comme Shine simplifie tout ça."},
+{id:117,cat:"Légitimité",pub:"b2b",q:"Vos produits respectent les normes INCI européennes ?",a:"Absolument. Tous nos produits ont leur DIP (Dossier d'Information Produit) conforme au règlement CE 1223/2009. Vous pouvez vendre en toute légalité dans l'UE."},
 ];
-/* STATE */
-const LS={g:k=>{try{return JSON.parse(localStorage.getItem('cg_'+k))}catch{return null}},s:(k,v)=>localStorage.setItem('cg_'+k,JSON.stringify(v)),d:k=>localStorage.removeItem('cg_'+k)};
-function devId(){let id=LS.g('did');if(!id){id='D-'+Math.random().toString(36).substr(2,8).toUpperCase();LS.s('did',id);}return id;}
+
+/* ═══════════ STORAGE ═══════════ */
+const LS={
+  g:k=>{try{return JSON.parse(localStorage.getItem('cg_'+k))}catch{return null}},
+  s:(k,v)=>localStorage.setItem('cg_'+k,JSON.stringify(v)),
+  d:k=>localStorage.removeItem('cg_'+k)
+};
+function devId(){let id=LS.g('did');if(!id){id='D-'+Math.random().toString(36).substr(2,8).toUpperCase();LS.s('did',id)}return id}
 const DID=devId();
 
-let currentFilter='Tout';
-let currentSession=[];
-let sessionNum=1;
-let seenCards=new Set();
-let viewedCount=0;
+/* ═══════════ STATE ═══════════ */
+let currentFilter='all';
+let currentQueue=[];
+let currentIndex=0;
+let sessionRatings={};
+let sessionReportSent=false;
+let isRecording=false;
+let recognition=null;
+let isSpeaking=false;
 
-/* ROUTING */
-const SCRS=['lock','pend','main'];
-function SS(n){SCRS.forEach(s=>document.getElementById(s).classList.toggle('hidden',s!==n));if(n==='main'){initMain();tick();}}
-function init(){if(LS.g('ok')){SS('main');return;}const pr=LS.g('pr');if(pr){showPend(pr);return;}SS('lock');}
+let lastTranscript='';
 
-/* FILTER */
-function setFilter(f){
-  currentFilter=f;
-  document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('active'));
-  event.target.classList.add('active');
-  newSession();
+function getRatings(){return LS.g('ratings')||{}}
+function saveRating(id,level){const r=getRatings();r[id]=level;LS.s('ratings',r)}
+function getSerie(){return LS.g('serie')||0}
+function setSerie(n){LS.s('serie',n)}
+
+/* ═══════════ ROUTING ═══════════ */
+const SCRS=['lock','pend','menu','themes','train','results'];
+function SS(n){
+  SCRS.forEach(s=>document.getElementById(s).classList.toggle('hidden',s!==n));
+  if(n==='menu') buildMenu();
+  if(n==='themes') buildThemes();
 }
 
-/* GET POOL */
-function getPool(){
-  let pool=ALL_OBJ;
-  if(currentFilter!=='Tout') pool=ALL_OBJ.filter(o=>o.type===currentFilter);
-  return pool;
+/* ═══════════ INIT ═══════════ */
+function init(){
+  if(LS.g('ok')){SS('menu');return}
+  const pr=LS.g('pr');
+  if(pr){showPend(pr);return}
+  SS('lock');
 }
 
-/* SHUFFLE */
-function shuffle(arr){return[...arr].sort(()=>Math.random()-.5);}
-
-/* NEW SESSION — 20 NOUVELLES objections */
-function newSession(){
-  const pool=getPool();
-  // Try unseen first
-  let unseen=pool.filter(o=>!seenCards.has(o.num));
-  if(unseen.length<20){
-    // Reset seen if not enough
-    seenCards.clear();
-    unseen=pool;
-  }
-  currentSession=shuffle(unseen).slice(0,20);
-  currentSession.forEach(o=>seenCards.add(o.num));
-  viewedCount=0;
-  sessionNum++;
-  document.getElementById('prog-set').textContent='Série '+sessionNum;
-  document.getElementById('prog-fill').style.width='0%';
-  document.getElementById('prog-txt').textContent='0 / 20 vues';
-  buildCards();
-  document.getElementById('cards-scroll').scrollTo(0,0);
-  if(sessionNum>2) toast('20 nouvelles objections ! 🔄','ok');
-}
-
-function initMain(){
-  updateAvatar(getConsultantName());
-  if(currentSession.length===0) newSession();
-  else buildCards();
-}
-
-/* BUILD CARDS */
-function buildCards(){
-  const scroll=document.getElementById('cards-scroll');
-  scroll.innerHTML='';
-  currentSession.forEach((c,i)=>{
-    const wrap=document.createElement('div');
-    wrap.className='card-3';
-    wrap.id='card3-'+i;
-    wrap.dataset.state='0';
-    wrap.dataset.viewed='0';
-
-    // Type badge color
-    const typeColor=c.type==='B2B'?'#2E7DD4':c.type==='B2C'?'#7C5CBF':'#4CAF82';
-    const typeLbl=c.type==='B2B'?'Professionnel':c.type==='B2C'?'Client':'Général';
-
-    // Keywords pills
-    const kwHtml=(c.kw||[]).map(k=>`<span class="kw-pill">${k}</span>`).join('');
-
-    // Clean category (remove B2C- / B2B- prefix)
-    const catDisplay=c.cat.replace(/^B2C\s*-\s*/i,'').replace(/^B2B\s*-\s*/i,'').toUpperCase();
-
-    wrap.innerHTML=`
-      <div class="card-face-3 face-1">
-        <div class="f1-num">#${c.num}</div>
-        <div class="f1-type" style="color:${typeColor}">${typeLbl}</div>
-        <div class="f1-cat">${catDisplay}</div>
-        <div class="f1-hint">Appuyer pour la question ↓</div>
-      </div>
-      <div class="card-face-3 face-2">
-        <div class="f2-lbl">❓ Objection</div>
-        <div class="f2-q">${c.q}</div>
-        <div class="f2-hint">Appuyer pour la réponse ↓</div>
-      </div>
-      <div class="card-face-3 face-3">
-        <div class="f3-lbl">✓ Réponse recommandée</div>
-        <div class="f3-a">${c.a}</div>
-        <div class="f3-kw">${kwHtml}</div>
-      </div>`;
-
-    wrap.addEventListener('click',()=>{
-      const st=parseInt(wrap.dataset.state);
-      if(st===0){
-        wrap.classList.add('state-1');
-        wrap.dataset.state='1';
-        if(wrap.dataset.viewed==='0'){
-          wrap.dataset.viewed='1';
-          viewedCount++;
-          const pct=(viewedCount/20)*100;
-          document.getElementById('prog-fill').style.width=pct+'%';
-          document.getElementById('prog-txt').textContent=viewedCount+' / 20 vues';
-        }
-      } else if(st===1){
-        wrap.classList.add('state-2');
-        wrap.dataset.state='2';
-      } else {
-        // Reset to face 1
-        wrap.classList.remove('state-1','state-2');
-        wrap.dataset.state='0';
-      }
-    });
-
-    wrap.style.animation='fadeUp .3s ease '+(i*.04)+'s both';
-    scroll.appendChild(wrap);
-  });
-
-  // Add keyframe if not exists
-  if(!document.getElementById('fadeup-style')){
-    const s=document.createElement('style');
-    s.id='fadeup-style';
-    s.textContent='@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}';
-    document.head.appendChild(s);
-  }
-}
-
-/* SEND REQUEST */
+/* ═══════════ AUTH ═══════════ */
 async function sendRequest(){
   const name=document.getElementById('rn').value.trim();
   const last=document.getElementById('rl').value.trim();
   const contact=document.getElementById('rc').value.trim();
-  if(!name||!contact){toast('Remplissez tous les champs','er');return;}
+  if(!name||!contact){toast('Remplissez tous les champs','er');return}
   const btn=document.getElementById('req-btn');
   btn.disabled=true;btn.innerHTML='<span class="spin"></span>Envoi...';
   const now=new Date();
@@ -759,90 +861,779 @@ async function sendRequest(){
   try{
     const res=await fetch('https://api.web3forms.com/submit',{
       method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
-      body:JSON.stringify({access_key:W3F_KEY,subject:'🔔 Demande accès Coach Chogan — '+name+' '+last,from_name:name+' '+last,email:ADMIN_EMAIL,replyto:contact,message:'Prénom : '+name+'\nNom : '+last+'\nContact : '+contact+'\nDate : '+date+'\n\n✅ CODE À ENVOYER : '+ACCESS_CODE})
+      body:JSON.stringify({
+        access_key:W3F_KEY,
+        subject:'🔔 Demande accès Coach Vocal — '+name+' '+last,
+        from_name:name+' '+last,email:ADMIN_EMAIL,replyto:contact,
+        message:'Prénom : '+name+'\nNom : '+last+'\nContact : '+contact+'\nDate : '+date+'\n\n✅ CODE À ENVOYER : '+ACCESS_CODE
+      })
     });
     const d=await res.json();
-    if(d.success){const req={name:name+' '+last,contact,date,did:DID};LS.s('pr',req);toast('Demande envoyée ✓','ok');setTimeout(()=>showPend(req),700);}
-    else throw new Error(d.message||'Échec');
-  }catch(e){toast('Erreur : '+e.message,'er');}
-  finally{btn.disabled=false;btn.innerHTML='📩 Envoyer la demande';}
+    if(d.success){
+      const req={name:name+' '+last,contact,date,did:DID};
+      LS.s('pr',req);toast('Demande envoyée ✓','ok');
+      setTimeout(()=>showPend(req),700);
+    }else throw new Error(d.message||'Échec');
+  }catch(e){toast('Erreur : '+e.message,'er')}
+  finally{btn.disabled=false;btn.innerHTML='📩 Envoyer la demande'}
 }
 
 function showPend(req){
-  document.getElementById('pend-box').innerHTML='<strong>'+req.name+'</strong> · '+req.contact+'<br><span style="font-size:10px;font-family:monospace;opacity:.45">'+req.did+' · '+req.date+'</span>';
+  document.getElementById('pend-box').innerHTML=
+    '<strong>'+req.name+'</strong> · '+req.contact+'<br>'+
+    '<span style="font-size:10px;font-family:monospace;opacity:.4">'+req.did+' · '+req.date+'</span>';
   SS('pend');
 }
 
-/* UNLOCK */
 function tryUnlock(id){
   const code=document.getElementById(id).value.trim().toUpperCase();
-  if(!code){toast('Entrez un code','er');return;}
+  if(!code){toast('Entrez un code','er');return}
   if(code===ACCESS_CODE.toUpperCase()){
     LS.s('ok',true);LS.d('pr');
     toast('Accès autorisé ! 🎉','ok');
     setTimeout(()=>askConsultantName(),600);
-  }else{toast('Code incorrect ✗','er');document.getElementById(id).value='';}
+  }else{
+    toast('Code incorrect ✗','er');
+    document.getElementById(id).value='';
+  }
 }
 
-/* CONSULTANT NAME */
+/* ═══════════ CONSULTANT NAME ═══════════ */
 function askConsultantName(){
-  if(LS.g('consultant_name')){SS('main');return;}
+  if(LS.g('name')){SS('menu');return}
   const ov=document.createElement('div');
-  ov.id='name-overlay';
+  ov.id='name-ov';
   ov.style.cssText='position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);display:flex;align-items:flex-end;justify-content:center';
-  ov.innerHTML='<div style="background:#1a1a26;border-radius:26px 26px 0 0;padding:28px 22px calc(32px + var(--sb));width:100%;max-width:480px;border-top:0.5px solid rgba(255,255,255,.12)"><div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.18);margin:0 auto 22px"></div><div style="font-size:22px;margin-bottom:6px">👋</div><div style="font-size:19px;font-weight:700;margin-bottom:6px">Bienvenue !</div><div style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:22px;line-height:1.5">Entrez votre prénom pour personnaliser votre expérience.</div><label class="form-label">Votre prénom</label><input id="cn-input" class="finput" type="text" placeholder="Prénom" style="margin-bottom:0"><button class="btn-g" onclick="saveConsultantName()" style="margin-top:14px">Commencer →</button></div>';
+  ov.innerHTML=`<div style="background:#1a1a26;border-radius:26px 26px 0 0;padding:28px 22px calc(32px + var(--sb));width:100%;max-width:480px;border-top:0.5px solid rgba(255,255,255,.1)">
+    <div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.18);margin:0 auto 22px"></div>
+    <div style="font-size:22px;margin-bottom:6px">👋</div>
+    <div style="font-size:19px;font-weight:700;margin-bottom:6px">Bienvenue !</div>
+    <div style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:22px;line-height:1.5">Entrez votre prénom pour personnaliser votre entraînement.</div>
+    <label class="form-label">Votre prénom</label>
+    <input id="cn-in" class="finput" type="text" placeholder="Prénom" style="margin-bottom:0">
+    <button class="btn-g" onclick="saveConsultantName()" style="margin-top:14px">Commencer l'entraînement →</button>
+  </div>`;
   document.body.appendChild(ov);
-  setTimeout(()=>document.getElementById('cn-input').focus(),400);
-  document.getElementById('cn-input').addEventListener('keydown',e=>{if(e.key==='Enter')saveConsultantName()});
+  setTimeout(()=>document.getElementById('cn-in').focus(),400);
+  document.getElementById('cn-in').addEventListener('keydown',e=>{if(e.key==='Enter')saveConsultantName()});
 }
 
 function saveConsultantName(){
-  const name=document.getElementById('cn-input').value.trim();
-  if(!name){toast('Entrez votre prénom','er');return;}
-  LS.s('consultant_name',name);
-  const ov=document.getElementById('name-overlay');if(ov)ov.remove();
-  SS('main');updateAvatar(name);
+  const name=document.getElementById('cn-in').value.trim();
+  if(!name){toast('Entrez votre prénom','er');return}
+  LS.s('name',name);
+  document.getElementById('name-ov')?.remove();
+  SS('menu');
 }
 
-function getConsultantName(){return LS.g('consultant_name')||'CC';}
-function updateAvatar(name){
-  const el=document.getElementById('av-initials');
-  if(el&&name)el.textContent=name.charAt(0).toUpperCase()+(name.length>1?name.charAt(1).toUpperCase():'');
+function getName(){return LS.g('name')||'Consultante'}
+
+/* ═══════════ MENU ═══════════ */
+function buildMenu(){
+  const name=getName();
+  const ini=name.charAt(0).toUpperCase()+(name.length>1?name.charAt(1).toUpperCase():'');
+  document.getElementById('av-initials').textContent=ini;
+  updateMenuStats();
+  updateModeCounts();
 }
 
-/* ADMIN */
-let _at=0,_att=null;
-function avTap(){_at++;clearTimeout(_att);_att=setTimeout(()=>_at=0,2000);if(_at>=5){_at=0;showAdminPw();}}
-function showAdminPw(){document.getElementById('apov').classList.add('show');setTimeout(()=>document.getElementById('apw').focus(),300);}
-function closeAdminPw(){document.getElementById('apov').classList.remove('show');document.getElementById('apw').value='';}
+function updateMenuStats(){
+  const ratings=getRatings();
+  const vals=Object.values(ratings);
+  const mastered=vals.filter(v=>v==='easy').length;
+  const total=vals.length;
+  const score=total>0?Math.round(mastered/total*100):0;
+  document.getElementById('st-serie').textContent=getSerie();
+  document.getElementById('st-total').textContent=total;
+  document.getElementById('st-mast').textContent=mastered;
+  document.getElementById('st-score').textContent=score+'%';
+}
+
+function getFiltered(){
+  if(currentFilter==='all') return OBJECTIONS;
+  if(currentFilter==='gen') return OBJECTIONS.filter(o=>o.pub==='gen');
+  if(currentFilter==='b2c') return OBJECTIONS.filter(o=>o.pub==='gen'||o.pub==='b2c');
+  if(currentFilter==='b2b') return OBJECTIONS.filter(o=>o.pub==='gen'||o.pub==='b2b');
+  return OBJECTIONS;
+}
+
+function updateModeCounts(){
+  const f=getFiltered();
+  const ratings=getRatings();
+  const hard=f.filter(o=>ratings[o.id]==='hard');
+  const newones=f.filter(o=>!ratings[o.id]);
+  document.getElementById('mc-random').textContent=f.length+' obj.';
+  document.getElementById('mc-theme').textContent=[...new Set(f.map(o=>o.cat))].length+' thèmes';
+  document.getElementById('mc-hard').textContent=hard.length+' obj.';
+  document.getElementById('mc-new').textContent=newones.length+' obj.';
+}
+
+function setFilter(f){
+  currentFilter=f;
+  document.querySelectorAll('.f-chip').forEach(c=>{
+    c.classList.toggle('on',c.dataset.f===f);
+  });
+  updateModeCounts();
+}
+
+/* ═══════════ MODES ═══════════ */
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function startMode(mode){
+  const f=getFiltered();
+  const ratings=getRatings();
+  let queue=[];
+  if(mode==='random') queue=shuffle(f);
+  else if(mode==='theme'){SS('themes');return}
+  else if(mode==='hard'){
+    queue=f.filter(o=>ratings[o.id]==='hard');
+    if(!queue.length){toast('Aucune objection difficile pour l\'instant 💪','in');return}
+    queue=shuffle(queue);
+  }
+  else if(mode==='new'){
+    queue=f.filter(o=>!ratings[o.id]);
+    if(!queue.length){toast('Toutes les objections ont été traitées ! 🏆','ok');return}
+    queue=shuffle(queue);
+  }
+  startTraining(queue);
+}
+
+/* ═══════════ THEMES ═══════════ */
+function buildThemes(){
+  const f=getFiltered();
+  const ratings=getRatings();
+  const cats={};
+  f.forEach(o=>{
+    if(!cats[o.cat]) cats[o.cat]=[];
+    cats[o.cat].push(o);
+  });
+  const list=document.getElementById('theme-list');
+  list.innerHTML='';
+  Object.entries(cats).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([cat,objs])=>{
+    const done=objs.filter(o=>ratings[o.id]).length;
+    const mastered=objs.filter(o=>ratings[o.id]==='easy').length;
+    const div=document.createElement('div');
+    div.className='theme-row';
+    div.innerHTML=`
+      <div>
+        <div class="theme-name">${cat}</div>
+        <div class="theme-meta">${done}/${objs.length} traitées · ${mastered} maîtrisées</div>
+      </div>
+      <div class="theme-badge">
+        <div class="t-count">${objs.length}</div>
+        <div class="t-arrow">›</div>
+      </div>`;
+    div.onclick=()=>startTheme(cat,objs);
+    list.appendChild(div);
+  });
+}
+
+function startTheme(cat,objs){
+  startTraining(shuffle(objs));
+}
+
+/* ═══════════ TRAINING ENGINE ═══════════ */
+function startTraining(queue){
+  if(!queue.length){toast('Aucune objection dans cette sélection','er');return}
+  currentQueue=queue;
+  currentIndex=0;
+  sessionRatings={};
+  sessionReportSent=false;
+  SS('train');
+  showCard(0);
+}
+
+function showCard(idx){
+  const card=currentQueue[idx];
+  if(!card) return;
+  const ratings=getRatings();
+
+  // Progress
+  const pct=Math.round((idx/currentQueue.length)*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-txt').textContent=(idx+1)+' / '+currentQueue.length;
+
+  // Serie badge
+  const serie=getSerie();
+  const sb=document.getElementById('serie-badge');
+  sb.textContent='🔥 '+serie;
+  sb.classList.toggle('on',serie>0);
+
+  // Card content
+  document.getElementById('q-cat').textContent=card.cat;
+  document.getElementById('q-num').textContent='N°'+String(card.id).padStart(3,'0');
+  const pubMap={gen:'🌿 Général',b2c:'👤 B2C',b2b:'🤝 B2B'};
+  document.getElementById('q-pub').textContent=pubMap[card.pub]||'';
+  document.getElementById('q-ctx').textContent=getCtx(card.pub, card.cat);
+  document.getElementById('q-text').textContent=card.q;
+  lastKwState={hit:[],miss:[],keywords:[]};
+
+  // Answer hidden
+  document.getElementById('a-card').classList.remove('show');
+  document.getElementById('reveal-btn').classList.remove('revealed');
+  document.getElementById('reveal-btn').textContent='✦ RÉVÉLER LA RÉPONSE IDÉALE ✦';
+  document.getElementById('a-text').textContent=card.a;
+
+  // Transcript reset
+  lastTranscript='';
+  document.getElementById('transcript').textContent='Votre réponse apparaîtra ici…';
+  document.getElementById('transcript').classList.remove('active');
+  document.getElementById('kw-wrap').classList.remove('show');
+  document.getElementById('kw-suggest').classList.remove('show');
+  document.getElementById('kw-all-wrap').classList.remove('show');
+  document.getElementById('kw-pct').textContent='0%';
+  document.getElementById('kw-bar').style.width='0%';
+  document.getElementById('kw-words').innerHTML='';
+  document.getElementById('kw-all-chips').innerHTML='';
+
+  // Already rated?
+  const prev=ratings[card.id];
+  const btns=document.querySelectorAll('.r-btn');
+  btns.forEach(b=>b.classList.remove('sel'));
+  if(prev){
+    const selBtn=document.querySelector('.r-'+prev);
+    if(selBtn) selBtn.classList.add('sel');
+  }
+
+  // Stop any TTS / recording
+  stopSpeaking();
+  stopRecording();
+  resetMicBtn();
+
+  // Nav
+  document.getElementById('nav-prev').disabled=(idx===0);
+  document.getElementById('nav-next').textContent=idx===currentQueue.length-1?'Terminer ✓':'Suivant →';
+
+  // Scroll to top of training body
+  document.getElementById('train-body').scrollTo(0,0);
+}
+
+function revealAnswer(){
+  document.getElementById('a-card').classList.add('show');
+  document.getElementById('reveal-btn').classList.add('revealed');
+  document.getElementById('reveal-btn').textContent='✓ Réponse révélée';
+  revealAllKeywords();
+}
+
+function rateCard(level){
+  const card=currentQueue[currentIndex];
+  if(!card) return;
+  saveRating(card.id,level);
+  sessionRatings[card.id]=level;
+
+  // Serie management
+  if(level==='easy') setSerie(getSerie()+1);
+  else setSerie(0);
+
+  document.getElementById('serie-badge').textContent='🔥 '+getSerie();
+  document.getElementById('serie-badge').classList.toggle('on',getSerie()>0);
+
+  const btns=document.querySelectorAll('.r-btn');
+  btns.forEach(b=>b.classList.remove('sel'));
+  const selBtn=document.querySelector('.r-'+level);
+  if(selBtn) selBtn.classList.add('sel');
+
+  const msgs={easy:'✅ Maîtrisée !',med:'👌 À retravailler',hard:'💪 À pratiquer encore !'};
+  toast(msgs[level],'in');
+  revealAllKeywords();
+
+  // Auto-envoi rapport quand toute la queue est notée (méthode Tac o tac)
+  if(Object.keys(sessionRatings).length===currentQueue.length && !sessionReportSent){
+    sendSessionReport();
+  }
+
+  // Auto-advance after 0.9s
+  setTimeout(()=>{
+    if(currentIndex<currentQueue.length-1) nextCard();
+    else showResults();
+  },900);
+}
+
+function nextCard(){
+  if(currentIndex<currentQueue.length-1){
+    currentIndex++;showCard(currentIndex);
+  }else{
+    showResults();
+  }
+}
+
+function prevCard(){
+  if(currentIndex>0){currentIndex--;showCard(currentIndex)}
+}
+
+/* ═══════════ TTS ═══════════ */
+function stopSpeaking(){
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  isSpeaking=false;
+  document.getElementById('q-speaker').textContent='🔊';
+}
+
+function speakText(text,onDone){
+  if(!window.speechSynthesis){toast('Synthèse vocale non supportée','er');return}
+  stopSpeaking();
+  const utt=new SpeechSynthesisUtterance(text);
+  utt.lang='fr-FR';utt.rate=0.88;utt.pitch=1;
+  utt.onend=()=>{isSpeaking=false;document.getElementById('q-speaker').textContent='🔊';if(onDone)onDone()};
+  window.speechSynthesis.speak(utt);
+  isSpeaking=true;
+  document.getElementById('q-speaker').textContent='⏸';
+}
+
+function speakQ(){
+  const card=currentQueue[currentIndex];
+  if(!card) return;
+  if(isSpeaking){stopSpeaking();return}
+  speakText(card.q);
+}
+
+function speakA(){
+  const card=currentQueue[currentIndex];
+  if(!card) return;
+  if(isSpeaking){stopSpeaking();return}
+  speakText(card.a);
+}
+
+/* ═══════════ CONTEXT ENGINE ═══════════ */
+const CTX_WHO = {
+  gen: 'Un prospect / une connaissance',
+  b2c: 'Une cliente particulière',
+  b2b: 'Une future consultante'
+};
+const CTX_SCENE = {
+  'Prix':       'discute du tarif lors d\'une présentation',
+  'Qualité':    'doute de la qualité du produit',
+  'Tenue':      'a testé le parfum et s\'interroge',
+  'Confiance':  'hésite à faire confiance à la marque',
+  'Légalité':   'soulève une question juridique sur les inspirations',
+  'Éthique':    'pose une question sur les valeurs de la marque',
+  'Choix':      'ne sait pas quelle référence choisir',
+  'Comparaison':'compare Chogan à une autre marque',
+  'Alcool':     'réagit à la première impression du parfum',
+  'Échantillon':'veut tester avant de s\'engager',
+  'Cadeau':     'cherche une idée cadeau parfum',
+  'Distribution':'préfère ses habitudes d\'achat classiques',
+  'Intensité':  'est gêné(e) par la puissance du parfum',
+  'Routine':    'est très attaché(e) à son parfum actuel',
+  'Conclusion': 'hésite à conclure la vente',
+  'Luxe':       'associe le prix bas à un manque de prestige',
+  'Flacon':     'est déçu(e) par le packaging',
+  'Business':   'évalue la viabilité économique',
+  'Recrutement':'hésite à rejoindre l\'équipe',
+  'Formation':  'veut comprendre l\'accompagnement prévu',
+  'Logistique': 'pose une question pratique sur la commande',
+  'Légitimité': 'questionne le cadre légal de la vente'
+};
+function getCtx(pub, cat){
+  const who = CTX_WHO[pub] || 'Un contact';
+  const scene = CTX_SCENE[cat] || 'pose une objection';
+  return '💬 '+who+' '+scene+'.';
+}
+
+/* ═══════════ KEYWORD ENGINE ═══════════ */
+const STOP_FR = new Set([
+  'le','la','les','un','une','des','de','du','d','l','en','et','ou','à','au','aux',
+  'ce','se','sa','son','ses','mon','ma','mes','ton','ta','tes','nous','vous','ils',
+  'elles','je','tu','il','elle','on','que','qui','quoi','dont','où','est','sont',
+  'être','avoir','avec','pour','par','sur','sous','dans','si','mais','car','or',
+  'ni','ne','pas','plus','très','bien','aussi','tout','tous','même','comme','plus',
+  'moins','c','n','s','y','m','j','qu','ça','cela','ceci','ceux','cette','ces',
+  'a','ai','as','avez','avons','ont','était','étaient','sera','serait','fait',
+  'faire','peut','peuvent','nous','après','avant','entre','vers','chez','sans',
+  'que','quand','comment','pourquoi','combien','votre','notre','leur','leurs',
+  'donc','alors','ainsi','donc','dont','cest','cela','non','oui','voila','voilà'
+]);
+
+function normalize(str){
+  return str.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/['']/g,' ')
+    .replace(/[^a-z0-9\s]/g,' ');
+}
+
+function extractKeywords(text){
+  return normalize(text)
+    .split(/\s+/)
+    .filter(w=>w.length>=4 && !STOP_FR.has(w));
+}
+
+function getUniqueKeywords(answerText){
+  const kwds = extractKeywords(answerText);
+  const seen = new Set();
+  return kwds.filter(w=>{if(seen.has(w))return false;seen.add(w);return true});
+}
+
+let lastKwState = {hit:[], miss:[], keywords:[]};
+
+function scoreAnswer(transcript, answerText){
+  const kwds = getUniqueKeywords(answerText);
+  if(kwds.length < 3) return {pct:0, hit:[], miss:[], keywords:kwds};
+  const normT = normalize(transcript);
+  const tWords = normT.split(/\s+/).filter(w=>w.length>=3);
+  const hit=[], miss=[];
+  kwds.forEach(kw=>{
+    // Correspondance stricte : le mot-clé est présent tel quel dans le transcript
+    // OU le transcript contient un mot qui commence par les 5 premières lettres du mot-clé (min 5 chars)
+    const exact = tWords.some(tw => tw === kw);
+    const stem  = kw.length >= 5 && tWords.some(tw => tw.length>=4 && tw.startsWith(kw.slice(0,5)));
+    if(exact || stem) hit.push(kw);
+    else miss.push(kw);
+  });
+  const pct = Math.round(hit.length / kwds.length * 100);
+  return {pct, hit, miss, keywords:kwds};
+}
+
+function updateKwScore(transcript){
+  const card = currentQueue[currentIndex];
+  if(!card || !transcript || transcript.length < 5) return;
+  const result = scoreAnswer(transcript, card.a);
+  lastKwState = result;
+  const {pct, hit, miss} = result;
+
+  const wrap = document.getElementById('kw-wrap');
+  const pctEl = document.getElementById('kw-pct');
+  const bar = document.getElementById('kw-bar');
+  const words = document.getElementById('kw-words');
+  const suggest = document.getElementById('kw-suggest');
+
+  if(result.keywords.length < 3){ wrap.classList.remove('show'); return; }
+  wrap.classList.add('show');
+
+  const color = pct>=80?'var(--green)':pct>=40?'var(--orange)':'var(--red)';
+  pctEl.textContent = pct+'%';
+  pctEl.style.color = color;
+  bar.style.width = pct+'%';
+  bar.style.background = color;
+
+  // Chips — seuls les VERTS (trouvés) sont visibles, les rouges restent cachés
+  words.innerHTML = '';
+  hit.forEach(w=>{
+    const c = document.createElement('div');
+    c.className = 'kw-chip kw-hit';
+    c.textContent = '✓ '+w;
+    words.appendChild(c);
+  });
+  miss.forEach(w=>{
+    const c = document.createElement('div');
+    c.className = 'kw-chip kw-miss'; // caché par CSS (display:none)
+    c.textContent = '○ '+w;
+    words.appendChild(c);
+  });
+
+  suggest.classList.add('show');
+  if(pct>=80){
+    suggest.style.cssText='background:rgba(50,200,100,.1);border:0.5px solid rgba(50,200,100,.25);color:var(--green)';
+    suggest.textContent='🎯 Excellente réponse ! → Notez Facile 😊';
+  } else if(pct>=40){
+    suggest.style.cssText='background:rgba(232,168,76,.1);border:0.5px solid rgba(232,168,76,.25);color:var(--orange)';
+    suggest.textContent='👌 Bonne base, continuez ! → Notez Moyen 🤔';
+  } else {
+    suggest.style.cssText='background:rgba(255,80,80,.08);border:0.5px solid rgba(255,80,80,.2);color:var(--red)';
+    suggest.textContent='💪 Revoir la réponse → Notez Difficile 😅';
+  }
+}
+
+/* Révèle score + mots-clés + phrase attendue — uniquement à la révélation */
+function revealAllKeywords(){
+  const card = currentQueue[currentIndex];
+  if(!card) return;
+
+  const kwds = getUniqueKeywords(card.a);
+  const wrap     = document.getElementById('kw-wrap');
+  const pctEl    = document.getElementById('kw-pct');
+  const barEl    = document.getElementById('kw-bar');
+  const wordsEl  = document.getElementById('kw-words');
+  const suggest  = document.getElementById('kw-suggest');
+  const allWrap  = document.getElementById('kw-all-wrap');
+  const allChips = document.getElementById('kw-all-chips');
+
+  // ── PHRASE ATTENDUE ── toujours visible
+  allWrap.classList.add('show');
+  allWrap.querySelector('.kw-all-title').textContent = '💬 Phrase attendue';
+  allChips.innerHTML = '';
+  const phrase = document.createElement('div');
+  phrase.style.cssText = 'font-size:13px;color:rgba(255,255,255,.85);line-height:1.65;font-style:italic;padding:4px 0';
+  phrase.textContent = '" '+card.a+' "';
+  allChips.appendChild(phrase);
+
+  // ── SCORE ── seulement si l'utilisateur a parlé
+  const transcript = lastTranscript;
+  if(!transcript || transcript.trim().length < 5 || kwds.length < 3) return;
+
+  const {pct, hit, miss} = scoreAnswer(transcript, card.a);
+  lastKwState = {pct, hit, miss, keywords:kwds};
+
+  wrap.classList.add('show');
+  const color = pct>=80?'var(--green)':pct>=40?'var(--orange)':'var(--red)';
+  pctEl.textContent = pct+'%';
+  pctEl.style.color = color;
+  barEl.style.width = pct+'%';
+  barEl.style.background = color;
+
+  // Chips mots-clés : ✓ vert si trouvé, ○ or si manqué
+  wordsEl.innerHTML = '';
+  kwds.forEach(w=>{
+    const found = hit.includes(w);
+    const c = document.createElement('div');
+    c.className = 'kw-chip';
+    c.style.cssText = found
+      ? 'background:rgba(50,200,100,.15);border:0.5px solid rgba(50,200,100,.3);color:var(--green)'
+      : 'background:rgba(201,168,76,.1);border:0.5px solid rgba(201,168,76,.25);color:var(--gold2)';
+    c.textContent = (found?'✓ ':'○ ')+w;
+    wordsEl.appendChild(c);
+  });
+
+  // Suggestion
+  suggest.classList.add('show');
+  if(pct>=80){
+    suggest.style.cssText='background:rgba(50,200,100,.1);border:0.5px solid rgba(50,200,100,.25);color:var(--green)';
+    suggest.textContent='🎯 Excellente réponse ! → Notez Facile 😊';
+  } else if(pct>=40){
+    suggest.style.cssText='background:rgba(232,168,76,.1);border:0.5px solid rgba(232,168,76,.25);color:var(--orange)';
+    suggest.textContent='👌 Bonne base ! → Notez Moyen 🤔';
+  } else {
+    suggest.style.cssText='background:rgba(255,80,80,.08);border:0.5px solid rgba(255,80,80,.2);color:var(--red)';
+    suggest.textContent='💪 À retravailler → Notez Difficile 😅';
+  }
+}
+
+/* ═══════════ SPEECH RECOGNITION ═══════════ */
+function resetMicBtn(){
+  isRecording=false;
+  const btn=document.getElementById('mic-btn');
+  btn.classList.remove('recording');
+  document.getElementById('mic-txt').textContent='🎤 Votre réponse à voix haute — Appuyez pour parler';
+}
+
+function stopRecording(){
+  if(recognition){try{recognition.stop()}catch(e){}}
+  isRecording=false;
+}
+
+function toggleRecording(){
+  if(isRecording){stopRecording();resetMicBtn();return}
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast('🎤 Reconnaissance vocale non disponible sur ce navigateur','er');return}
+  stopSpeaking();
+  recognition=new SR();
+  recognition.lang='fr-FR';
+  recognition.continuous=false;
+  recognition.interimResults=true;
+  const box=document.getElementById('transcript');
+  box.textContent='…';
+  box.classList.add('active');
+  recognition.onresult=(e)=>{
+    let interim='',final='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal) final+=e.results[i][0].transcript;
+      else interim+=e.results[i][0].transcript;
+    }
+    const text=final||interim||'';
+    box.textContent=text||'…';
+    // On sauvegarde le transcript mais on n'affiche rien pendant l'enregistrement
+    lastTranscript=text;
+  };
+  recognition.onerror=(e)=>{
+    resetMicBtn();
+    if(e.error!=='aborted') toast('Erreur micro : '+e.error,'er');
+  };
+  recognition.onend=()=>{resetMicBtn()};
+  recognition.start();
+  isRecording=true;
+  const btn=document.getElementById('mic-btn');
+  btn.classList.add('recording');
+  document.getElementById('mic-txt').textContent='🔴 Enregistrement en cours — Appuyez pour arrêter';
+}
+
+/* ═══════════ RESULTS ═══════════ */
+function showResults(){
+  SS('results');
+  const vals=Object.values(sessionRatings);
+  const easy=vals.filter(v=>v==='easy').length;
+  const med=vals.filter(v=>v==='med').length;
+  const hard=vals.filter(v=>v==='hard').length;
+  const total=vals.length;
+  const pct=total>0?Math.round(easy/total*100):0;
+  document.getElementById('res-easy').textContent=easy;
+  document.getElementById('res-med').textContent=med;
+  document.getElementById('res-hard').textContent=hard;
+  document.getElementById('res-badge').textContent='📊 Score de session : '+pct+'%';
+  document.getElementById('res-s').textContent='Session de '+total+' objections traitées.';
+  const icon=pct>=80?'🏆':pct>=50?'👍':'💪';
+  document.getElementById('res-icon').textContent=icon;
+  if(!sessionReportSent) sendSessionReport();
+}
+
+function restartSession(){
+  currentIndex=0;
+  startTraining(shuffle(currentQueue));
+}
+
+function retryHard(){
+  const hard=currentQueue.filter(o=>sessionRatings[o.id]==='hard'||(getRatings()[o.id]==='hard'));
+  if(!hard.length){toast('Aucune difficile dans cette session !','in');return}
+  startTraining(shuffle(hard));
+}
+
+/* ═══════════ REPORT (méthode Tac o tac) ═══════════ */
+async function sendSessionReport(){
+  if(sessionReportSent) return;
+  sessionReportSent=true;
+
+  const name=getName();
+  const now=new Date();
+  const date=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  const time=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+
+  const vals=Object.values(sessionRatings);
+  const easy=vals.filter(v=>v==='easy').length;
+  const med=vals.filter(v=>v==='med').length;
+  const hard=vals.filter(v=>v==='hard').length;
+  const total=vals.length;
+  const pct=total>0?Math.round(easy/total*100):0;
+
+  const lines=Object.entries(sessionRatings).map(([id,r])=>{
+    const o=OBJECTIONS.find(x=>x.id==id);
+    if(!o) return null;
+    const e=r==='easy'?'✅':r==='med'?'🟡':'🔴';
+    return e+' N°'+String(o.id).padStart(3,'0')+' '+o.cat+' — "'+o.q+'"';
+  }).filter(Boolean).join('\n');
+
+  const body=
+`📊 RAPPORT DE SESSION — Coach Vocal Chogan
+
+👤 Consultante : ${name}
+📅 Date        : ${date}
+🕐 Heure       : ${time}
+
+─────────────────────────
+RÉSULTATS :
+✅ Facile   : ${easy}/${total}
+🟡 Moyen    : ${med}/${total}
+🔴 Difficile: ${hard}/${total}
+📈 Score    : ${pct}%
+─────────────────────────
+
+DÉTAIL PAR OBJECTION :
+${lines}
+
+─────────────────────────
+Rapport automatique — Coach Vocal Chogan`;
+
+  try{
+    await fetch('https://api.web3forms.com/submit',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({
+        access_key:W3F_KEY,
+        subject:'📊 Rapport session — '+name+' ('+pct+'%)',
+        from_name:'Coach Chogan',
+        email:ADMIN_EMAIL,
+        message:body
+      })
+    });
+    document.getElementById('rapport-badge').style.display='inline-flex';
+    toast('📊 Rapport envoyé à l\'admin','ok');
+  }catch(e){/* silent */}
+}
+
+function sendReportManual(){
+  if(Object.keys(sessionRatings).length===0){
+    toast('Évaluez d\'abord quelques objections !','er');return;
+  }
+  sessionReportSent=false;
+  sendSessionReport();
+}
+
+function restartFromNav(){
+  document.getElementById('rapport-badge').style.display='none';
+  restartSession();
+}
+
+/* ═══════════ ADMIN ═══════════ */
+function showAdminPw(){document.getElementById('apov').classList.add('show');setTimeout(()=>document.getElementById('apw').focus(),300)}
+function closeAdminPw(){document.getElementById('apov').classList.remove('show');document.getElementById('apw').value=''}
 function checkAdminPw(){
-  const v=document.getElementById('apw').value.trim();
-  if(v===ADMIN_CODE){closeAdminPw();showAdminPanel();}
-  else{toast('Code admin incorrect','er');document.getElementById('apw').value='';}
+  if(document.getElementById('apw').value.trim()===ADMIN_CODE){closeAdminPw();showAdminPanel()}
+  else{toast('Code admin incorrect','er');document.getElementById('apw').value=''}
 }
 document.getElementById('apw').addEventListener('keydown',e=>{if(e.key==='Enter')checkAdminPw()});
 
 function showAdminPanel(){
-  const old=document.getElementById('admin-overlay');if(old)old.remove();
-  const ov=document.createElement('div');ov.id='admin-overlay';
+  document.getElementById('admin-ov')?.remove();
+  const ov=document.createElement('div');
+  ov.id='admin-ov';
   ov.style.cssText='position:fixed;inset:0;z-index:300;background:var(--bg);overflow-y:auto;display:flex;flex-direction:column';
-  ov.innerHTML='<div style="padding:calc(20px + var(--st)) 22px 16px;display:flex;align-items:center;gap:14px;border-bottom:0.5px solid rgba(255,255,255,.08);position:sticky;top:0;background:var(--bg);z-index:5"><button onclick="document.getElementById(\'admin-overlay\').remove()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:none;color:#fff;font-size:18px;cursor:pointer">←</button><div style="font-size:18px;font-weight:700">Panneau Admin</div><div style="margin-left:auto;padding:4px 12px;border-radius:20px;background:rgba(201,168,76,.15);border:0.5px solid rgba(201,168,76,.3);font-size:11px;color:var(--gold)">ADMIN</div></div><div style="padding:22px"><div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Code d\'accès</div><div style="background:rgba(201,168,76,.08);border:0.5px solid rgba(201,168,76,.25);border-radius:16px;padding:16px 20px;margin-bottom:10px"><div style="font-size:11px;color:var(--gold);margin-bottom:6px;letter-spacing:.06em;text-transform:uppercase">Code à partager</div><div style="font-size:28px;font-weight:700;font-family:monospace;letter-spacing:.12em;color:var(--gold2)">'+ACCESS_CODE+'</div></div><button onclick="navigator.clipboard.writeText(\''+ACCESS_CODE+'\').then(()=>toast(\'Code copié !\',\'ok\'))" style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,.06);border:0.5px solid rgba(255,255,255,.12);color:#fff;font-size:14px;cursor:pointer;font-family:inherit;margin-bottom:24px">Copier le code</button><div style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:24px">📧 Email admin : '+ADMIN_EMAIL+'<br>📦 300 objections · 3 faces · Filtres B2C / B2B / Général</div><button onclick="if(confirm(\'Réinitialiser ?\')){ localStorage.removeItem(\'cg_ok\');localStorage.removeItem(\'cg_pr\');document.getElementById(\'admin-overlay\').remove();SS(\'lock\');toast(\'Réinitialisé\',\'in\')}" style="width:100%;padding:14px;border-radius:14px;background:transparent;border:0.5px solid rgba(255,80,80,.3);color:#ff5050;font-size:14px;cursor:pointer;font-family:inherit;margin-bottom:40px">Réinitialiser l\'accès</button></div>';
+  const ratings=getRatings();
+  const total=Object.values(ratings).length;
+  const mastered=Object.values(ratings).filter(v=>v==='easy').length;
+  ov.innerHTML=`
+    <div style="padding:calc(20px + var(--st)) 22px 16px;display:flex;align-items:center;gap:14px;border-bottom:0.5px solid rgba(255,255,255,.08);position:sticky;top:0;background:var(--bg);z-index:5">
+      <button onclick="document.getElementById('admin-ov').remove()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:none;color:#fff;font-size:18px;cursor:pointer">←</button>
+      <div style="font-size:18px;font-weight:700">Panneau Admin</div>
+      <div style="margin-left:auto;padding:4px 12px;border-radius:20px;background:rgba(201,168,76,.15);border:0.5px solid rgba(201,168,76,.3);font-size:11px;font-weight:600;color:var(--gold)">ADMIN</div>
+    </div>
+    <div style="padding:22px">
+      <div class="form-label" style="margin-bottom:12px">Code d'accès</div>
+      <div style="background:rgba(201,168,76,.08);border:0.5px solid rgba(201,168,76,.25);border-radius:16px;padding:16px 20px;margin-bottom:10px">
+        <div style="font-size:11px;color:var(--gold);margin-bottom:6px;letter-spacing:.06em;text-transform:uppercase">Code à partager</div>
+        <div style="font-size:28px;font-weight:700;font-family:monospace;letter-spacing:.12em;color:var(--gold2)">${ACCESS_CODE}</div>
+      </div>
+      <button onclick="navigator.clipboard.writeText('${ACCESS_CODE}').then(()=>toast('Code copié !','ok'))" style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,.06);border:0.5px solid rgba(255,255,255,.12);color:#fff;font-size:14px;cursor:pointer;font-family:inherit;margin-bottom:24px">Copier le code</button>
+      <div class="form-label" style="margin-bottom:12px">Statistiques globales</div>
+      <div style="background:var(--card);border:0.5px solid rgba(255,255,255,.08);border-radius:16px;padding:16px 18px;margin-bottom:8px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><div style="font-size:24px;font-weight:700;color:var(--gold)">${total}</div><div style="font-size:11px;color:var(--muted)">Traitées</div></div>
+        <div><div style="font-size:24px;font-weight:700;color:var(--green)">${mastered}</div><div style="font-size:11px;color:var(--muted)">Maîtrisées</div></div>
+      </div>
+      <div style="background:var(--card);border:0.5px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 18px;margin-bottom:24px">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:3px">Email admin</div>
+        <div style="font-size:14px;font-weight:500">${ADMIN_EMAIL}</div>
+      </div>
+      <div class="form-label" style="margin-bottom:12px">Réinitialiser</div>
+      <button onclick="if(confirm('Réinitialiser toute la progression ?')){LS.d('ok');LS.d('pr');LS.d('ratings');LS.d('serie');LS.d('name');document.getElementById('admin-ov').remove();SS('lock');toast('Réinitialisé','in')}" style="width:100%;padding:14px;border-radius:14px;background:transparent;border:0.5px solid rgba(255,80,80,.3);color:#ff5050;font-size:14px;cursor:pointer;font-family:inherit;margin-bottom:8px">
+        Réinitialiser l'accès et les données
+      </button>
+      <button onclick="if(confirm('Réinitialiser la progression seulement ?')){LS.d('ratings');LS.d('serie');document.getElementById('admin-ov').remove();SS('menu');toast('Progression réinitialisée','in')}" style="width:100%;padding:14px;border-radius:14px;background:transparent;border:0.5px solid rgba(255,168,76,.25);color:var(--orange);font-size:14px;cursor:pointer;font-family:inherit;margin-bottom:40px">
+        Réinitialiser la progression seulement
+      </button>
+    </div>`;
   document.body.appendChild(ov);
 }
 
-/* CLOCK */
-function tick(){const n=new Date(),el=document.getElementById('clk');if(el)el.textContent=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');}
-tick();setInterval(tick,15000);
+let _at=0,_att=null;
+function avTap(){
+  _at++;clearTimeout(_att);_att=setTimeout(()=>_at=0,2000);
+  if(_at>=5){_at=0;showAdminPw()}
+}
 
-/* TOAST */
+/* ═══════════ CLOCK ═══════════ */
+function tick(){
+  const n=new Date();
+  const el=document.getElementById('s-clk');
+  if(el) el.textContent=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');
+}
+setInterval(tick,15000);
+
+/* ═══════════ TOAST ═══════════ */
 let tt=null;
-function toast(msg,type='in'){const el=document.getElementById('toast');el.textContent=msg;el.className='show t-'+type;clearTimeout(tt);tt=setTimeout(()=>el.className='',3200);}
+function toast(msg,type='in'){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.className='show t-'+type;
+  clearTimeout(tt);tt=setTimeout(()=>el.className='',3200);
+}
 
-/* KEY LISTENERS */
+/* ═══════════ KEY LISTENERS ═══════════ */
 document.getElementById('uc').addEventListener('keydown',e=>{if(e.key==='Enter')tryUnlock('uc')});
 document.getElementById('pc').addEventListener('keydown',e=>{if(e.key==='Enter')tryUnlock('pc')});
 
-/* START */
+/* ═══════════ AUTO REPORT ═══════════ */
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden'&&Object.keys(sessionRatings).length>0) sendSessionReport();
+});
+window.addEventListener('pagehide',()=>{
+  if(Object.keys(sessionRatings).length>0) sendSessionReport();
+});
+
+/* ═══════════ START ═══════════ */
 init();
 </script>
 </body>
